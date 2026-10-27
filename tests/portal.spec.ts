@@ -16,7 +16,7 @@ test('the cover leads to independent section pages and back', async ({ page }) =
 test('all seven formats are real deep links with their own content', async ({ page }) => {
   const titles: Record<string, string> = {
     reportaje: 'Reportaje audiovisual', comic: 'Cómic periodístico', podcast: 'Podcast',
-    participa: 'Cuestionario', cronologia: 'Cronología', lectura: 'Reportaje escrito', equipo: 'Sobre nosotros',
+    participa: 'Gamificación', cronologia: 'Cronología', lectura: 'Reportaje escrito', equipo: 'Sobre nosotros',
   };
   for (const [route, title] of Object.entries(titles)) {
     const response = await page.goto(`/${route}`);

@@ -6,7 +6,7 @@ export const documentary = {
 
 export const sections = [
   ['reportaje', 'Documental'], ['comic', 'Cómic'], ['podcast', 'Podcast'],
-  ['participa', 'Cuestionario'], ['cronologia', 'Cronología'],
+  ['participa', 'Gamificación'], ['cronologia', 'Cronología'],
   ['lectura', 'Reportaje escrito'], ['equipo', 'Equipo'],
 ] as const;
 
