@@ -16,7 +16,7 @@ const montserrat = localFont({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.SITE_URL || 'http://localhost:3000'),
-  title: 'Reservas en rojo | Especial periodístico en Piura',
+  title: 'Reservas en rojo | Proyecto transmedia',
   description: 'Una investigación multimedia sobre las dificultades de acceso a la sangre durante emergencias médicas en Piura, Perú.',
   openGraph: {
     title: 'Reservas en rojo', locale: 'es_PE', type: 'website',
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     images: [{ url: '/media/banco.webp', width: 1366, height: 768, alt: 'Banco de sangre y donantes en Piura' }],
   },
   robots: { index: false, follow: false },
-  icons: { icon: '/favicon.ico' },
+  icons: { icon: { url: '/favicon-mark.png', type: 'image/png', sizes: '64x64' } },
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

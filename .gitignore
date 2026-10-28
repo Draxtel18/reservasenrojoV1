@@ -22,3 +22,5 @@ next-env.d.ts
 .taste-skill/completion-final/
 .taste-skill/restored-motion/
 .taste-skill/custom-player-final/
+
+.taste-skill/identity-final/

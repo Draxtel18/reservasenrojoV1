@@ -37,19 +37,19 @@ All mocked stories, voices, profiles and events are labeled as demonstration mat
 
 ## Motion and accessibility
 
-The owner explicitly approved the original full choreography as the automatic default, including in browsers reporting reduced motion. No automatic gentle replacement is applied. This is a site-specific prototype policy, not a device-setting change. The fully labeled footer control pauses/restarts all animation; an explicit pause choice is remembered for the current browser tab. Review this presentation policy before a public accessibility release.
+The owner explicitly approved the original full choreography as the automatic default, including in browsers reporting reduced motion. No automatic gentle replacement is applied. This is a site-specific prototype policy, not a device-setting change. There is no animation toggle. Legacy per-tab pause preferences are ignored so the approved full presentation stays active. Review this presentation policy before a public accessibility release.
 
-Entrances distinguish title, photographs, text and rows. IntersectionObserver triggers each registered element once; MutationObserver catches content streamed after route changes. Pausing cancels active effects and reveals pending content. Without JavaScript, content stays readable. Native scroll timelines progressively add photo drift and reading progress without scroll hijacking.
+Entrances distinguish title, photographs, text and rows. IntersectionObserver triggers each registered element once; MutationObserver catches content streamed after route changes. Route cleanup cancels active effects and reveals pending content. Without JavaScript, content stays readable. Native scroll timelines progressively add photo drift and reading progress without scroll hijacking.
 
-The footer return link runs on every same-page activation, even with an unchanged hash, preserves cross-page and modified-click navigation, and uses instant scrolling in paused mode. Playwright enables native smooth scrolling explicitly for deterministic Edge tests.
+The footer return link runs on every same-page activation, even with an unchanged hash, preserves cross-page and modified-click navigation, and always uses smooth scrolling. Playwright enables native smooth scrolling explicitly for deterministic Edge tests.
 
 ## Assets and presentation
 
-The official JPEG remains unchanged. `public/media/logo-transparent.png` is an owner-authorized deterministic alpha-mask extraction, preserving dimensions and all RGB samples. Reproduce it with `node scripts/remove-logo-background.cjs`. Its bag highlights and drop reflection are retained; exterior paper and letter counters are transparent. Both placements use light backgrounds.
+The official JPEG remains unchanged. `public/media/logo-transparent.png` is an owner-authorized deterministic alpha-mask extraction, preserving dimensions and all RGB samples. Reproduce it with `node scripts/remove-logo-background.cjs`. Its bag highlights and drop reflection are retained; exterior paper and letter counters are transparent. Both placements use light backgrounds. The site now references `public/media/logo-transparent.webp`, encoded losslessly from that PNG (1536×1024, identical alpha and visible RGB samples). The PNG remains an unmodified source backup.
 
-Photographs use WebP derivatives and Next Image. A dedicated image-only clipping frame prevents parallax transforms from painting into captions, which retain a 16px gap and comfortable line height.
+All raster content served by the site uses WebP sources and Next Image. The six photographs already had WebP derivatives; the remaining transparent logo changed from 629856 bytes to 241938 bytes (61.59% smaller source asset). This is not a measured network-load improvement: Next Image already negotiates and resizes delivery. Original JPEG/PNG sources remain as backups and are not referenced by page image elements. Favicon PNG is retained for compatibility and inline SVG illustrations/icons stay vector-based. A dedicated image-only clipping frame prevents parallax transforms from painting into captions, which retain a 16px gap and comfortable line height.
 
-Montserrat is self-hosted under `public/fonts/OFL.txt`. TasteSkill direction: name-as-monument, seed 372704318; the official palette and type remain unchanged. Social icons are accessible but intentionally noninteractive until official Facebook/Instagram URLs are supplied.
+Montserrat is self-hosted under `public/fonts/OFL.txt`. TasteSkill direction: name-as-monument, seed 372704318; the official palette and type remain unchanged. The footer contains only Facebook and TikTok icon links to the official URLs supplied by the owner. They have accessible names, 44px targets and open in a separate tab with noopener/noreferrer. The favicon is a transparent 64×64 PNG droplet mark, served at /favicon-mark.png with explicit image/png metadata. The former PNG contained the entire opaque wordmark; PNG format alone does not imply transparency. The new asset URL avoids reusing that cached image. The full header/footer WebP logo is unchanged.
 
 ## Publication boundary
 

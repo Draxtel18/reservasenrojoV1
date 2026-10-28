@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState } from 'react';
-import { comicPages, demoDisclosure, podcast } from '@/content/demo';
+import { comicPages, podcast } from '@/content/demo';
 import styles from './demo-media.module.css';
 
 function ComicArt({ scene }: { scene: number }) {
@@ -27,7 +27,7 @@ function ComicArt({ scene }: { scene: number }) {
 export function DemoComicCover() {
   return <div className={`comic-cover ${styles.cover}`} data-reveal="media">
     <p className={styles.coverBrand}>Reservas en rojo</p><p className={`cover-name ${styles.coverTitle}`}>La espera</p>
-    <ComicArt scene={0} /><p>Un relato ficticio en tres páginas.</p>
+    <ComicArt scene={0} /><p>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
   </div>;
 }
 
@@ -47,7 +47,7 @@ export function DemoComic() {
       }}>
       <div className={styles.readerContent}>
         <button className="dialog-close" onClick={() => dialog.current?.close()} autoFocus>Cerrar lector</button>
-        <h2 id="demo-comic-title">La espera</h2><p className={styles.notice}>{demoDisclosure}</p>
+        <h2 id="demo-comic-title">La espera</h2>
         <div className={styles.pageHeader}><p aria-live="polite">Página {page + 1} de {comicPages.length}</p><button className={styles.textButton} aria-pressed={zoom} onClick={() => setZoom(!zoom)}>{zoom ? 'Ajustar viñeta' : 'Ampliar viñeta'}</button></div>
         <h3>{current.title}</h3><div className={styles.artViewport}><div className={zoom ? styles.zoom : ''}><ComicArt scene={current.scene} /></div></div>
         <p className={styles.narration}>{current.narration}</p>
@@ -64,7 +64,7 @@ export function DemoComic() {
 
 export function DemoPodcast() {
   return <div className={styles.podcast}>
-    <h3>{podcast.title}</h3><p className={styles.notice}>Voz sintética. Relato ficticio de demostración, no una entrevista real.</p>
+    <h3>{podcast.title}</h3><p className={styles.notice}>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
     <audio controls preload="metadata" src="/demo/podcast-demo.wav" aria-label="Podcast de demostración: La espera">Tu navegador no admite audio. Usa el enlace de descarga o lee la transcripción.</audio>
     <a className="text-link" href="/demo/podcast-demo.wav" download>Descargar muestra WAV ↓</a>
     <details><summary>Transcripción</summary><div className={styles.transcript}>{podcast.transcript.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div></details>

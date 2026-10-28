@@ -1,3 +1,23 @@
+# Current favicon transparency correction
+
+Root cause: the previous32×32favicon was genuinelyPNG but had no alpha channel and contained the complete wordmark. The supplied alternativeJPEG also has an opaque background. Replaced the tab icon with a64×64transparentPNG droplet mark at /favicon-mark.png; the new URL avoids reuse of the old cached image. Header/footer fullWebP logos are unchanged. The original icon files and user resources are preserved.
+
+Built-in image editor prompt: isolate only the existing red droplet replacing the O in ROJO, preserve its pointed-top/rounded-bottom silhouette and white curved highlight, no letters, bag, opaque background, shadow or new embellishments; center it on a transparent square with balanced padding. Input: recursos-abi/logo_alternativo.jpg. Final project artifact: public/favicon-mark.png,2571bytes,RGBA64×64,corneralpha0,2420fullytransparentpixels. The editor output was resized with the existing codec; this is a derived icon, not a claim of pixel-identical extraction.
+
+RED2/2 observed against oldicon, then focused2/2 andtypecheck0. Isolatedproductionbuild0, full27/27pass. Browser regression checks actualPNGsignature/MIME, alpha, square size and redmarkextent. ActualIAB head confirmed /favicon-mark.png and64x64; directasset view loaded correctly. Nativeassessmentmedium222lines,review_duefalse/under_budget; noSTART/approval needed or claimed. No commits/publication. Risk:none for this asset/metadata change. Prior unrelated comicmasthead visualfinding unchanged. Dev3002unchanged; production3003session34981. Engramunknown_project; localnotes authoritative. Earlier entries below are historical.
+
+# Current WebP source optimization
+
+All raster content image sources across the eight routes now use WebP. Six photo derivatives were already present; the remaining transparent logo changed from629856to241938bytes (61.59%smaller source), lossless1536×1024. Decoded comparison: zero alpha mismatch and zero visibleRGB mismatch. Header/footer reference the new WebP; original JPEG/PNG backups and public paths remain untouched. FaviconPNG and inline vector illustrations/icons are deliberately retained. No claims of measured network savings: Next Image already optimizes delivered formats and sizes.
+
+Actual RED observed on oldPNG header source after restarting stopped dev3002; initial connection-refused attempt is environmental, not RED proof. Focused2/2/typecheck0, isolated reconciled production build0, full26/26pass. New test validates WebP paths/MIME/signatures on every route. Header/footer captures1440/768/390 viewed, nooverflow/pageerrors/missingimages. Evidence C:/Users/geuse/AppData/Local/Temp/reservas-webp-final. Dev3002 session29456 and production3003 session17984 remain running. Native assessment succeeded after explicit inclusion of all three known untracked assets/tests with matching inventory: medium,180changedlines,review_duefalse/under_budget; no review START/approval required or claimed. This supersedes the earlier unavailable inventory assessment below. No commits/publication. Risk:none for this lossless asset/reference change. Prior unrelated masthead visual finding unchanged.
+
+# Current identity/footer corrections
+
+PNG favicon, always-on full motion without a toggle, and official Facebook/TikTok icon links are verified. PNG signature/MIME32x32 and every route metadata passed. Prior session pause values are ignored. Original choreography, smooth repeated return, route cleanup and once-only reveals remain intact. No Instagram or pending social labels. External profiles were not opened; exact supplied hrefs were checked.
+
+Parent typecheck0, focused3/3, full25/25. Independent reconciled productionbuild/typecheck0 and targeted4/4, 98intermediate title samples, active photo drift, no detached running animations. Initial isolated scratch mismatch was stale baseline content, not current source. Footer captures1440/768/390 viewed by verifier and parent: nooverflow/pageerrors. Evidence .taste-skill/identity-final. No new full performance audit. Native review remains unavailable at intended-untracked inventory collection; no formal approval claimed. Prior unrelated masthead inspector issue unchanged. No commits/publication. Risk:item3(sharedMotion), independently verified. Engramunknown_project. Earlier entries below are historical.
+
 # S13: final comic action and custom documentary player
 
 The final comic page replaces Next with Close and returns focus to the launch button. Site-styled video controls use the official YouTube API without obscuring or cropping the provider viewport. Play/pause, seeking, actual time/duration, mute/volume, fullscreen, error fallback, route cleanup and delayed-ready visibility are covered.

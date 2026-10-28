@@ -32,7 +32,7 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
     </div>
     <SectionContent section={section} />
     {section === 'reportaje' && <section className="section film-gallery light" aria-labelledby="gallery-title">
-      <div className="section-intro"><h2 id="gallery-title" data-reveal="text">Registro fotográfico</h2><p data-reveal="text">Imágenes proporcionadas para el especial. Autoría y fechas pendientes de confirmación.</p></div>
+      <div className="section-intro"><h2 id="gallery-title" data-reveal="text">Registro fotográfico</h2><p data-reveal="text">Imágenes proporcionadas para el proyecto. Autoría y fechas pendientes de confirmación.</p></div>
       <div className="film-photos">{[
         ['procedimiento', 'Personal sanitario y material de extracción.'],
         ['prueba', 'Prueba realizada en el dedo de una persona.'],

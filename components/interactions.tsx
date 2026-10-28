@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { createPortal } from 'react-dom';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -16,9 +15,7 @@ export function BackToTop() {
     // Scrolling is an action on every activation, not a same-URL navigation.
     if (location.hash !== '#inicio') history.replaceState(history.state, '', '/#inicio');
     document.querySelector<HTMLElement>('main h1')?.focus({ preventScroll: true });
-    const mode = document.documentElement.dataset.motion;
-    const animate = mode !== 'reduced';
-    window.scrollTo({ top: 0, behavior: animate ? 'smooth' : 'instant' });
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   }}>Volver al inicio <span>↑</span></Link>;
 }
 
@@ -27,8 +24,8 @@ export function Navigation() {
   const pathname = usePathname();
   const menuButton = useRef<HTMLButtonElement>(null);
   return <header className="site-header">
-    <Link className="brand" href="/" aria-label="Reservas en rojo, inicio" onClick={() => setOpen(false)}><Image src="/media/logo-transparent.png" alt="Reservas en rojo" width={151} height={101} priority /></Link>
-    <span className="edition">Especial periodístico <span>Piura, Perú</span></span>
+    <Link className="brand" href="/" aria-label="Reservas en rojo, inicio" onClick={() => setOpen(false)}><Image src="/media/logo-transparent.webp" alt="Reservas en rojo" width={151} height={101} priority /></Link>
+    <span className="edition">Proyecto transmedia <span>Piura, Perú</span></span>
     <button ref={menuButton} className="menu-button" aria-expanded={open} aria-controls="navigation" onClick={() => setOpen(!open)}>{open ? 'Cerrar menú' : 'Menú'}</button>
     <nav id="navigation" aria-label="Navegación principal" className={open ? 'navigation is-open' : 'navigation'} onKeyDown={event => { if (event.key === 'Escape') { setOpen(false); menuButton.current?.focus(); } }}>
       {[sections[0], sections[5], sections[6]].map(([id, label]) => <Link key={id} href={`/${id}`} aria-current={pathname === `/${id}` ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</Link>)}
@@ -40,16 +37,9 @@ export function Navigation() {
 export function Motion() {
   const pathname = usePathname();
   const previousPath = useRef(pathname);
-  const [enabled, setEnabled] = useState<boolean | null>(null);
-  const override = useRef<string | null>(null);
   useEffect(() => {
-    try { override.current = sessionStorage.getItem('reservas-motion'); } catch { /* Storage is optional. */ }
-    // The owner explicitly approved the original full choreography as the default.
-    setEnabled(override.current ? override.current === 'enabled' : true);
-  }, []);
-  useEffect(() => {
-    if (enabled === null) return;
-    document.documentElement.dataset.motion = enabled ? 'enabled' : 'reduced';
+    // Full choreography is always active; legacy pause preferences are ignored.
+    document.documentElement.dataset.motion = 'enabled';
     document.documentElement.dataset.motionStyle = 'full';
     const elements = new Set<HTMLElement>();
     const animations = new Set<Animation>();
@@ -86,7 +76,6 @@ export function Motion() {
         document.querySelector<HTMLElement>('main h1')?.focus({ preventScroll: true });
         previousPath.current = pathname;
       }
-      if (!enabled) return;
       document.querySelectorAll<HTMLElement>('[data-reveal], [data-motion-enter]').forEach((element, index) => {
         if (elements.has(element)) return;
         elements.add(element);
@@ -101,27 +90,15 @@ export function Motion() {
     const mutations = new MutationObserver(register);
     const frame = requestAnimationFrame(() => {
       register();
-      if (enabled) mutations.observe(document.body, { childList: true, subtree: true });
+      mutations.observe(document.body, { childList: true, subtree: true });
     });
     return () => {
       cancelAnimationFrame(frame); observer.disconnect(); mutations.disconnect();
       animations.forEach(animation => animation.cancel());
       elements.forEach(element => { element.dataset.motionState = 'visible'; });
     };
-  }, [pathname, enabled]);
-  function toggle() {
-    const next = !enabled;
-    override.current = next ? 'enabled' : 'reduced';
-    try { sessionStorage.setItem('reservas-motion', override.current); } catch { /* Continue without persistence. */ }
-    setEnabled(next);
-  }
-  if (enabled === null) return null;
-  const slot = document.getElementById('motion-control-slot');
-  const label = enabled ? 'Pausar animaciones' : 'Activar animaciones';
-  return <><div className="reading-progress" aria-hidden="true" />
-    {slot && createPortal(<button className="motion-control" onClick={toggle} aria-label={label} title={`${label}. No cambia la configuración del dispositivo.`}>
-      <span aria-hidden="true">{enabled ? 'Ⅱ' : '▷'}</span><span className="motion-label">{label}</span>
-    </button>, slot)}</>;
+  }, [pathname]);
+  return <div className="reading-progress" aria-hidden="true" />;
 }
 
 export function Quiz() {
@@ -144,7 +121,7 @@ export function Quiz() {
       <h3 ref={questionHeading} tabIndex={-1}>{question.prompt}</h3>
       <div className="answers">{question.answers.map((answer, index) => <button key={answer} disabled={choice !== null} aria-pressed={choice === index} className={choice === index ? 'answer selected' : 'answer'} onClick={() => { setChoice(index); if (index === question.correct) setScore(score + 1); }}>{answer}<span aria-hidden="true">{choice === index ? '●' : '○'}</span></button>)}</div>
       <div aria-live="polite" className="quiz-feedback">{choice !== null && <><p><strong>{choice === question.correct ? 'Respuesta correcta.' : 'Revisemos la respuesta.'}</strong> {question.explanation}</p><button className="button" onClick={next}>{step === questions.length - 1 ? 'Ver resultado' : 'Siguiente pregunta'}</button></>}</div>
-    </> : <div className="quiz-result"><h3 ref={resultHeading} tabIndex={-1}>Tu recorrido</h3><p className="score">{score} de {questions.length}</p><p>Informarse también es distinguir lo que sabemos de lo que falta por verificar. Vuelve al documental para seguir explorando.</p><button className="button" onClick={reset}>Reiniciar cuestionario</button></div>}
-    <noscript>El cuestionario necesita JavaScript. Puedes explorar la investigación y acceder al documental sin completarlo.</noscript>
+    </> : <div className="quiz-result"><h3 ref={resultHeading} tabIndex={-1}>Tu recorrido</h3><p className="score">{score} de {questions.length}</p><p>Informarse también es distinguir lo que sabemos de lo que falta por verificar. Vuelve al reportaje para seguir explorando.</p><button className="button" onClick={reset}>Reiniciar cuestionario</button></div>}
+    <noscript>El cuestionario necesita JavaScript. Puedes explorar la investigación y acceder al reportaje sin completarlo.</noscript>
   </div>;
 }

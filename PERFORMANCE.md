@@ -41,3 +41,7 @@ Raw evidence is retained under .taste-skill/completion-final/ (ignored generated
 ## S12 scope note
 
 The owner subsequently approved restoring full default choreography; the automatic gentle variant was removed. Existing animation frames and durations were preserved. Production build/typecheck and20regressiontests passed for that restoration. Payload measurements above are the earlier read-only snapshot, not fresh post-S12 byte counts. No optimization refactor was performed.
+
+## WebP source update (2026-10-27)
+
+All raster content sources are WebP; favicon PNG and inline SVG remain exceptions. Six photos already used WebP. The transparent logo source changed losslessly from 629856 to 241938 bytes (61.59% smaller), without changing 1536×1024 dimensions, alpha or visible RGB samples. Original assets remain backups. Header/footer references were updated. This source-file reduction is not a remeasurement of network transfer or Core Web Vitals: Next Image was already optimizing delivery. Production build/typecheck and all26tests passed; eight-route image source/MIME/signature regression covers the requested format.

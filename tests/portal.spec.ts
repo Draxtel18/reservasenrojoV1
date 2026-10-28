@@ -29,13 +29,13 @@ test('all seven formats are real deep links with their own content', async ({ pa
   expect(response?.status()).toBe(404);
 });
 
-test('logo uses a transparent PNG without redrawing the artwork', async ({ page }) => {
+test('logo uses transparent WebP without redrawing the artwork', async ({ page }) => {
   await page.goto('/');
   const logo = page.locator('.brand img');
-  await expect(logo).toHaveAttribute('src', /logo-transparent\.png/);
+  await expect(logo).toHaveAttribute('src', /logo-transparent\.webp/);
   const alpha = await page.evaluate(async () => {
     const image = new Image();
-    image.src = '/media/logo-transparent.png';
+    image.src = '/media/logo-transparent.webp';
     await image.decode();
     const canvas = document.createElement('canvas');
     canvas.width = image.naturalWidth; canvas.height = image.naturalHeight;
@@ -48,13 +48,27 @@ test('logo uses a transparent PNG without redrawing the artwork', async ({ page 
   expect(alpha.ink).toBeGreaterThan(1000);
 });
 
-test('footer names pending social profiles without fake links', async ({ page }) => {
-  await page.goto('/comic');
-  const social = page.getByRole('region', { name: 'Redes sociales' });
-  await expect(social.getByRole('img', { name: 'Facebook', exact: false })).toBeVisible();
-  await expect(social.getByRole('img', { name: 'Instagram', exact: false })).toBeVisible();
-  await expect(social).toContainText('Próximamente');
-  await expect(social.getByRole('link')).toHaveCount(0);
+test('all raster content uses working WebP sources on every route', async ({ page, request }) => {
+  const sources = new Set<string>();
+  for (const route of ['/', '/reportaje', '/comic', '/podcast', '/participa', '/cronologia', '/lectura', '/equipo']) {
+    await page.goto(route);
+    const images = await page.locator('img').evaluateAll(elements => elements.map(image => image.getAttribute('src')!));
+    expect(images.length).toBeGreaterThan(0);
+    for (const src of images) {
+      const url = new URL(src, page.url());
+      const source = url.searchParams.get('url') || url.pathname;
+      expect(source).toMatch(/\.webp$/);
+      sources.add(source);
+    }
+  }
+  for (const source of sources) {
+    const response = await request.get(source);
+    expect(response.status(), source).toBe(200);
+    expect(response.headers()['content-type'], source).toContain('image/webp');
+    const bytes = await response.body();
+    expect(bytes.subarray(0, 4).toString()).toBe('RIFF');
+    expect(bytes.subarray(8, 12).toString()).toBe('WEBP');
+  }
 });
 
 test('back to top repeats even when the home hash already matches', async ({ page }) => {
@@ -67,7 +81,7 @@ test('back to top repeats even when the home hash already matches', async ({ pag
   }
 });
 
-test('back to top scrolls smoothly on every activation and respects the footer pause choice', async ({ page }) => {
+test('back to top scrolls smoothly on every activation and across routes', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   for (let attempt = 0; attempt < 3; attempt++) {
@@ -89,17 +103,13 @@ test('back to top scrolls smoothly on every activation and respects the footer p
       (window as Window & { scrollSamples?: number[] }).scrollSamples?.some(y => y > 0 && y < top), start)).toBe(true);
     await expect.poll(() => page.evaluate(() => scrollY), { timeout: 8000 }).toBeLessThan(5);
   }
-  await page.getByRole('button', { name: 'Pausar animaciones', exact: true }).click();
-  await page.evaluate(() => window.scrollTo({ top: document.documentElement.scrollHeight, behavior: 'instant' }));
-  await page.getByRole('link', { name: 'Volver al inicio ↑', exact: true }).click();
-  expect(await page.evaluate(() => scrollY)).toBeLessThan(5);
   await page.goto('/comic');
   await page.getByRole('link', { name: 'Volver al inicio ↑', exact: true }).click();
   await expect(page).toHaveURL(/\/#inicio$/);
   await expect(page.locator('h1')).toHaveText('Reservas en rojo');
 });
 
-test('motion is choreographed, answers react and the footer can pause all effects', async ({ page }) => {
+test('motion is choreographed and quiz answers still react', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   const portal = page.locator('.portal-link').first();
@@ -109,7 +119,7 @@ test('motion is choreographed, answers react and the footer can pause all effect
   await page.goto('/participa');
   await page.getByRole('button', { name: 'Piura', exact: true }).click();
   await expect(page.locator('.quiz-feedback')).toContainText('Respuesta correcta.');
-  await page.getByRole('button', { name: 'Pausar animaciones', exact: true }).click();
-  await expect.poll(() => page.locator('main').evaluate(element => element.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0);
+  await expect(page.getByRole('button', { name: /animaciones/i })).toHaveCount(0);
+  await expect(page.locator('html')).toHaveAttribute('data-motion', 'enabled');
   await expect(page.locator('h1')).toBeVisible();
 });
