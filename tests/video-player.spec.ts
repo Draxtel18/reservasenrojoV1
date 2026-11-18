@@ -19,7 +19,12 @@ const api = `window.__videoCalls=[]; window.YT={Player:class {
   unMute(){this.muted=false;window.__videoCalls.push('unmute');}
   isMuted(){return this.muted;} getVolume(){return this.volume;}
   destroy(){window.__videoCalls.push('destroy');}
-  getOption(module, option){ return module === 'captions' && option === 'tracklist' ? (Array.isArray(window.__captionTracks) ? window.__captionTracks : [{languageCode:'es'}]) : null; }
+  getOption(module, option){
+    if (module !== 'captions') return null;
+    if (option === 'tracklist') return Array.isArray(window.__captionTracks) ? window.__captionTracks : [{languageCode:'es'}];
+    if (option === 'track') return window.__captionCurrent || {};
+    return null;
+  }
   setOption(module, option, value){ window.__videoCalls.push('caption:set:'+JSON.stringify(value)); }
   loadModule(module){ window.__videoCalls.push('caption:load:'+module); }
   unloadModule(module){ window.__videoCalls.push('caption:unload:'+module); }
@@ -150,6 +155,22 @@ test('subtitles toggle drives the provider caption module and reports missing tr
   await expect(page.getByRole('status')).toContainText('no expone pistas de subtítulos');
   await expect(page.getByRole('button', { name: 'Activar subtítulos', exact: true })).toHaveAttribute('aria-pressed', 'false');
   expect(await page.evaluate(() => (window as Window & { __videoCalls?: string[] }).__videoCalls)).not.toContain('caption:set:{"languageCode":"es"}');
+});
+
+test('captions already active are detected on ready and can be turned off', async ({ page }) => {
+  await page.addInitScript(() => { (window as Window & { __captionCurrent?: unknown }).__captionCurrent = { languageCode: 'es' }; });
+  await page.route('https://www.youtube.com/iframe_api', route => route.fulfill({ contentType: 'application/javascript', body: api }));
+  await page.route('https://www.youtube-nocookie.com/**', route => route.fulfill({ contentType: 'text/html', body: '<html>Provider fixture</html>' }));
+  await page.goto('/reportaje');
+  await clickControl(page.getByRole('button', { name: 'Reproducir reportaje', exact: true }));
+  // Detection happens asynchronously: provider ready plus one delayed retry.
+  await expect(page.getByRole('button', { name: 'Desactivar subtítulos', exact: true })).toHaveAttribute('aria-pressed', 'true', { timeout: 10000 });
+  await clickControl(page.getByRole('button', { name: 'Desactivar subtítulos', exact: true }));
+  const calls = await page.evaluate(() => (window as Window & { __videoCalls?: string[] }).__videoCalls ?? []);
+  expect(calls).toContain('caption:unload:captions');
+  // Detecting an already-active track must never re-assert it through the provider.
+  expect(calls.filter(call => call.startsWith('caption:set:'))).toEqual([]);
+  await expect(page.getByRole('button', { name: 'Activar subtítulos', exact: true })).toHaveAttribute('aria-pressed', 'false');
 });
 
 test('a delayed provider seek cannot overwrite the saved video position with zero', async ({ page }) => {

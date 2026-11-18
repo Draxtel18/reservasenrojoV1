@@ -81,6 +81,18 @@ export function Documentary() {
     } catch { setCaptionTracks([]); }
   }
 
+  function readCaptionState() {
+    const instance = player.current;
+    try {
+      const current = instance?.getOption?.('captions', 'track');
+      const languageCode = typeof (current as CaptionTrack | null | undefined)?.languageCode === 'string'
+        ? String((current as CaptionTrack).languageCode) : '';
+      if (!languageCode) return;
+      setCaptionTracks(previous => (previous.length > 0 ? previous : [languageCode]));
+      setCaptionsOn(true);
+    } catch { /* The captions module may not be ready yet. */ }
+  }
+
   useEffect(() => {
     if (!origin) return;
     initialized.current = false;
@@ -102,6 +114,9 @@ export function Documentary() {
           player.current = event.target;
           setReady(true); sync();
           readCaptionTracks();
+          readCaptionState();
+          // YouTube settles the captions module slightly after the player is ready.
+          window.setTimeout(readCaptionState, 600);
           setStatus('Listo para reproducir.');
           // Do not start late playback if the visitor has already scrolled away.
           const bounds = iframe.current?.getBoundingClientRect();
@@ -116,6 +131,7 @@ export function Documentary() {
             finished.current = true; lastSaved.current = 0; restoreTarget.current = 0;
             writeProgress(progressKey, 0); setSavedPosition(0);
           } else if (event.data === 1) finished.current = false;
+          if (event.data === 1) readCaptionState();
           sync(event.data === 1 || event.data === 2);
         },
         onError: fail,
