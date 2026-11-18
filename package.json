@@ -9,6 +9,16 @@
     "typecheck": "tsc --noEmit",
     "test": "playwright test"
   },
-  "dependencies": { "next": "16.4.3", "react": "19.3.1", "react-dom": "19.3.1" },
-  "devDependencies": { "@playwright/test": "1.64.1", "@types/node": "^22", "@types/react": "^19", "@types/react-dom": "^19", "typescript": "^5" }
+  "dependencies": {
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "@types/node": "^22",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "typescript": "^5"
+  }
 }
