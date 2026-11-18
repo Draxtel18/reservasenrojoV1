@@ -367,3 +367,13 @@ html[data-motion="enabled"] [data-motion-state="pending"] { opacity: 0; }
 .profile .profile-name { line-height: 1.4; letter-spacing: 0; }
 .profile .profile-bio { margin-top: 14px; font-size: 13px; line-height: 1.8; }
 .profile .profile-demo-label { margin-top: 14px; color: var(--deep); font-size: 13px; }
+/* Reading and chronology read as distinct editorial formats, not one shared template. */
+.written .article-grid article { max-width: 62ch; }
+.written .article-opening { align-items: end; }
+.written .article-index { padding-left: 18px; border-left: 4px solid var(--red); }
+.timeline .demo-timeline-item { position: relative; padding-bottom: 48px; }
+.timeline .demo-timeline-item::before { content: ''; position: absolute; width: 12px; height: 12px; left: -7px; top: 7px; background: var(--red); }
+.timeline .timeline-layout > figure { position: sticky; top: 130px; }
+@media (max-width: 700px) {
+  .timeline .timeline-layout > figure { position: static; }
+}

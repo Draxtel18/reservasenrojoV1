@@ -14,7 +14,7 @@ test('the editorial shell has eight sections, all formats and nine clearly ficti
   await page.goto('/cronologia');
   await expect(page.locator('.demo-timeline-item')).toHaveCount(5);
   await page.goto('/lectura');
-  await expect(page.locator('#lectura')).toContainText('Ficción editorial');
+  await expect(page.locator('#lectura')).toContainText('pendientes de incorporación');
 });
 
 test('documentary loads the real privacy-enhanced embed only on request', async ({ page }) => {

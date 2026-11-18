@@ -35,6 +35,23 @@ export const editorial = {
   status: 'El reportaje escrito completo y las entrevistas están pendientes de incorporación. Esta presentación no los sustituye.',
 };
 
+export const readingNotes = [
+  { title: 'El punto de partida', text: editorial.context },
+  { title: 'Qué busca el proyecto', text: editorial.purpose },
+  { title: 'Lo que falta por incorporar', text: editorial.status + ' La autoría, la fecha de publicación y las fuentes del texto están pendientes de confirmación.' },
+];
+
+export const timelineNotes = [
+  { label: 'Entrada 01', title: 'Plantear la pregunta', text: 'El acceso a la sangre durante emergencias médicas en Piura es el punto de partida del proyecto.' },
+  { label: 'Entrada 02', title: 'Mirar el reportaje', text: 'El audiovisual proporcionado es la pieza principal disponible para explorar el tema.' },
+  { label: 'Entrada 03', title: 'Recorrer otros lenguajes', text: 'El cómic y la narración sonora ofrecen una historia ilustrada y una experiencia de escucha, no documentos de hechos acreditados.' },
+  { label: 'Entrada 04', title: 'Volver a las preguntas', text: 'El cuestionario invita a reconocer el enfoque del proyecto y el valor de las fuentes verificables.' },
+  { label: 'Entrada 05', title: 'Completar el contexto', text: 'La secuencia de hechos, sus fechas y las fuentes que la sustenten deben incorporarse antes de publicar una cronología factual.' },
+];
+
+// Estimate only the available text, not the unpublished full report.
+export const readingMinutes = Math.max(1, Math.ceil(readingNotes.map(item => item.title + ' ' + item.text).join(' ').split(/\s+/).length / 200));
+
 export const portals = [
   { id: 'reportaje', title: 'La historia, de cerca', label: 'Ver reportaje', kind: 'Reportaje audiovisual', image: 'banco', alt: 'Ingreso al banco de sangre y área de donantes', description: 'Una investigación sobre el acceso a la sangre durante emergencias médicas en Piura. El reportaje es el punto de partida.' },
   { id: 'comic', title: 'Otra forma de mirar', label: 'Explorar cómic', kind: 'Narrativa ilustrada', image: null, alt: '', description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' },

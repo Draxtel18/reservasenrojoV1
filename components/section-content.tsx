@@ -2,8 +2,8 @@ import Image from 'next/image';
 import { Quiz } from '@/components/interactions';
 import { Documentary } from '@/components/video-player';
 import { DemoComic, DemoComicCover, DemoPodcast } from '@/components/demo-media';
-import { documentary, editorial, sections } from '@/content/editorial';
-import { demoArticle, demoTeam, demoTimeline } from '@/content/demo';
+import { documentary, editorial, readingMinutes, readingNotes, sections, timelineNotes } from '@/content/editorial';
+import { demoTeam } from '@/content/demo';
 
 function Photo({ name, alt }: { name: string; alt: string }) {
   return <Image src={`/media/${name}.webp`} alt={alt} width={1366} height={768} sizes="(max-width: 700px) 100vw, 65vw" className="editorial-photo" />;
@@ -30,12 +30,12 @@ export function SectionContent({ section }: { section: string }) {
         <Quiz />
       </section>),
     cronologia: (<section id="cronologia" className="section timeline dark" aria-labelledby="timeline-title">
-        <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Cinco jornadas en las que se llevaron a cabo el proyecto.</p></div>
-        <div className="timeline-layout"><ol className="demo-timeline">{demoTimeline.map(item => <li className="demo-timeline-item" key={item.label} data-reveal="row"><h3>{item.title}</h3><p className="timeline-date">{item.label}</p><p>{item.text}</p></li>)}</ol><figure data-reveal="media"><Photo name="donacion" alt="Una bolsa de sangre se encuentra en el equipo de extracción" /><figcaption>Fotografía original del proyecto.</figcaption></figure></div>
+        <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Cinco entradas para orientarte entre los contenidos. No es una secuencia de hechos verificados. Fechas y fuentes pendientes.</p></div>
+        <div className="timeline-layout"><ol className="demo-timeline">{timelineNotes.map(item => <li className="demo-timeline-item" key={item.label} data-reveal="row"><h3>{item.title}</h3><p className="timeline-date">{item.label}</p><p>{item.text}</p></li>)}</ol><figure data-reveal="media"><Photo name="donacion" alt="Una bolsa de sangre se encuentra en el equipo de extracción" /><figcaption>Fotografía proporcionada. Autoría y fecha pendientes.</figcaption></figure></div>
       </section>),
     lectura: (<section id="lectura" className="section written light" aria-labelledby="written-title">
         <div className="article-opening"><h2 id="written-title" data-reveal>Detrás de la urgencia</h2><p className="article-lead" data-reveal>{editorial.lead}</p></div>
-        <div className="article-grid"><aside><p>Editorial (Por definir)</p><nav className="article-index" aria-label="Índice del relato">{demoArticle.map((item, index) => <a href={`#demo-article-${index}`} key={item.title}>{item.title}</a>)}</nav></aside><article>{demoArticle.map((item, index) => <div key={item.title} id={`demo-article-${index}`} className="demo-article-part"><h3>{item.title}</h3><p>{item.text}</p>{index === 1 && <figure data-reveal="media"><Photo name="reserva" alt="Bolsa de sangre en una bandeja del equipo de extracción" /><figcaption>Fotografía original</figcaption></figure>}</div>)}<a className="text-link" href="/reportaje">Ver el reportaje original</a></article></div>
+        <div className="article-grid"><aside><p>Lectura del planteamiento</p><p>{readingMinutes} min de lectura estimada. Autoría y fecha pendientes.</p><nav className="article-index" aria-label="Índice del relato">{readingNotes.map((item, index) => <a href={`#demo-article-${index}`} key={item.title}>{item.title}</a>)}</nav></aside><article>{readingNotes.map((item, index) => <div key={item.title} id={`demo-article-${index}`} className="demo-article-part"><h3>{item.title}</h3><p>{item.text}</p>{index === 1 && <figure data-reveal="media"><Photo name="reserva" alt="Bolsa de sangre en una bandeja del equipo de extracción" /><figcaption>Fotografía proporcionada. Crédito pendiente.</figcaption></figure>}</div>)}<a className="text-link" href="/reportaje">Ver el reportaje original</a></article></div>
       </section>),
     equipo: (<section id="equipo" className="section team light" aria-labelledby="team-title">
         <div className="section-intro"><h2 id="team-title" data-reveal>Sobre nosotros</h2><p data-reveal>El equipo detrás de este proyecto.</p></div>

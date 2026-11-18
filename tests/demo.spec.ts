@@ -29,13 +29,14 @@ test('podcast demo has real playable audio and a labeled transcript', async ({ p
   await expect(page.getByText('Transcripción', { exact: true })).toBeVisible();
 });
 
-test('editorial demo fills chronology article and exactly nine fictional profiles', async ({ page }) => {
+test('chronology and the written report keep their honest structures', async ({ page }) => {
   await page.goto('/cronologia');
-  await expect(page.locator('#cronologia')).toContainText('ficticio');
+  await expect(page.locator('#cronologia')).toContainText('Fechas y fuentes pendientes');
   await expect(page.locator('.demo-timeline-item')).toHaveCount(5);
   await page.goto('/lectura');
-  await expect(page.locator('article')).toContainText('ficticio');
-  expect((await page.locator('article').innerText()).split(/\s+/).length).toBeGreaterThan(300);
+  await expect(page.locator('.article-index a')).toHaveCount(3);
+  await expect(page.locator('article h3')).toHaveText(['El punto de partida', 'Qué busca el proyecto', 'Lo que falta por incorporar']);
+  await expect(page.locator('#lectura')).not.toContainText('Lorem Ipsum');
   await page.goto('/equipo');
   await expect(page.locator('.profile')).toHaveCount(9);
   await expect(page.locator('#equipo')).toContainText('ficticios');
