@@ -1,7 +1,8 @@
 'use client';
 
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { comicPages, podcast } from '@/content/demo';
+import { readProgress, writeProgress } from '@/lib/playback-progress';
 import styles from './demo-media.module.css';
 
 function ComicArt({ scene }: { scene: number }) {
@@ -34,31 +35,67 @@ export function DemoComicCover() {
 export function DemoComic() {
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
+  const body = useRef<HTMLDivElement>(null);
+  const gesture = useRef<{ x: number; y: number; time: number } | null>(null);
   const [page, setPage] = useState(0);
   const [zoom, setZoom] = useState(false);
+  const [open, setOpen] = useState(false);
   const current = comicPages[page];
-  function go(next: number) { setPage(Math.max(0, Math.min(comicPages.length - 1, next))); setZoom(false); }
-  return <><button ref={trigger} className="button dark-button" onClick={() => { setPage(0); setZoom(false); dialog.current?.showModal(); }}>Explorar cómic</button>
-    <dialog ref={dialog} className={styles.reader} aria-labelledby="demo-comic-title" onClose={() => trigger.current?.focus()}
+  useEffect(() => {
+    if (!open) return;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = previous; };
+  }, [open]);
+  function go(next: number) {
+    const index = Math.max(0, Math.min(comicPages.length - 1, Math.floor(next)));
+    setPage(index); writeProgress('comic-la-espera', index); setZoom(false);
+    body.current?.scrollTo({ top: 0 });
+  }
+  return <><button ref={trigger} className="button dark-button" onClick={() => {
+    setPage(Math.min(comicPages.length - 1, Math.max(0, Math.floor(readProgress('comic-la-espera')))));
+    setZoom(false); setOpen(true); dialog.current?.showModal(); body.current?.scrollTo({ top: 0 });
+  }}>Explorar cómic</button>
+    <dialog ref={dialog} className={styles.reader} aria-labelledby="demo-comic-title" onClose={() => { setOpen(false); trigger.current?.focus(); }}
       onClick={event => { if (event.target === event.currentTarget) dialog.current?.close(); }}
       onKeyDown={event => {
         if (event.key === 'ArrowRight') { event.preventDefault(); go(page + 1); }
         if (event.key === 'ArrowLeft') { event.preventDefault(); go(page - 1); }
       }}>
       <div className={styles.readerContent}>
-        <button className="dialog-close" onClick={() => dialog.current?.close()} autoFocus>Cerrar lector</button>
-        <h2 id="demo-comic-title">La espera</h2>
-        <div className={styles.pageHeader}><p aria-live="polite">Página {page + 1} de {comicPages.length}</p><button className={styles.textButton} aria-pressed={zoom} onClick={() => setZoom(!zoom)}>{zoom ? 'Ajustar viñeta' : 'Ampliar viñeta'}</button></div>
+        <header className={styles.readerHeader}>
+          <div><h2 id="demo-comic-title">La espera</h2><p aria-live="polite">Página {page + 1} de {comicPages.length}</p></div>
+          <button className={styles.close} onClick={() => dialog.current?.close()} autoFocus>Cerrar lector <span aria-hidden="true">×</span></button>
+        </header>
+        <div ref={body} className={styles.readerBody} data-comic-body style={{ touchAction: zoom ? 'pan-x pan-y pinch-zoom' : 'pan-y pinch-zoom' }}
+          onTouchStart={event => {
+            gesture.current = event.touches.length === 1 && !zoom && (!window.visualViewport || window.visualViewport.scale <= 1)
+              ? { x: event.touches[0].clientX, y: event.touches[0].clientY, time: Date.now() } : null;
+          }}
+          onTouchMove={event => { if (event.touches.length !== 1) gesture.current = null; }}
+          onTouchCancel={() => { gesture.current = null; }}
+          onTouchEnd={event => {
+            const start = gesture.current; gesture.current = null;
+            if (!start || event.touches.length || event.changedTouches.length !== 1 || zoom || (window.visualViewport && window.visualViewport.scale > 1)) return;
+            const dx = event.changedTouches[0].clientX - start.x;
+            const dy = event.changedTouches[0].clientY - start.y;
+            if (Math.abs(dx) >= 70 && Math.abs(dx) > Math.abs(dy) * 1.7 && Date.now() - start.time < 800) go(page + (dx < 0 ? 1 : -1));
+          }}>
+        <div className={styles.pageHeader}><button className={styles.textButton} onClick={() => go(0)}>Volver al inicio</button><button className={styles.textButton} aria-pressed={zoom} onClick={() => setZoom(!zoom)}>{zoom ? 'Ajustar viñeta' : 'Ampliar viñeta'}</button></div>
         <h3>{current.title}</h3><div className={styles.artViewport}><div className={zoom ? styles.zoom : ''}><ComicArt scene={current.scene} /></div></div>
         <p className={styles.narration}>{current.narration}</p>
         <div className={styles.dialogue}>{current.dialogue.map(line => <p key={line}>{line}</p>)}</div>
+        </div>
         <nav className={styles.readerNav} aria-label="Páginas del cómic">
           <button className="button dark-button" disabled={page === 0} onClick={() => go(page - 1)} aria-label="Página anterior">← Anterior</button>
           <button className="button dark-button" onClick={() => page === comicPages.length - 1 ? dialog.current?.close() : go(page + 1)} aria-label={page === comicPages.length - 1 ? 'Cerrar cómic' : 'Página siguiente'}>{page === comicPages.length - 1 ? 'Cerrar' : 'Siguiente →'}</button>
         </nav>
       </div>
     </dialog>
-    <noscript>El lector necesita JavaScript. Puedes leer la misma historia ficticia en el reportaje escrito de muestra.</noscript>
+    <noscript><section aria-label="Historia del cómic sin JavaScript">
+      <h2>La espera</h2><p>El lector interactivo necesita JavaScript. Puedes leer aquí la historia completa.</p>
+      {comicPages.map(item => <article key={item.title}><h3>{item.title}</h3><p>{item.narration}</p>{item.dialogue.map(line => <p key={line}>{line}</p>)}</article>)}
+    </section></noscript>
   </>;
 }
 

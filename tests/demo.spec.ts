@@ -4,7 +4,7 @@ test('comic demo can be read, navigated and closed with focus restored', async (
   await page.goto('/comic');
   await page.getByRole('button', { name: 'Explorar cómic', exact: true }).click();
   const reader = page.getByRole('dialog');
-  await expect(reader).toContainText('ficticio');
+  await expect(reader.getByRole('heading', { name: 'La espera', exact: true })).toBeVisible();
   await expect(reader.getByText('Página 1 de 3', { exact: true })).toBeVisible();
   await reader.getByRole('button', { name: 'Página siguiente', exact: true }).click();
   await expect(reader.getByText('Página 2 de 3', { exact: true })).toBeVisible();
