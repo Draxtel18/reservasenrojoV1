@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { comicPages, podcast } from '@/content/demo';
 import { readProgress, writeProgress } from '@/lib/playback-progress';
+import { AudioPlayer } from './audio-player';
 import styles from './demo-media.module.css';
 
 function ComicArt({ scene }: { scene: number }) {
@@ -102,7 +103,7 @@ export function DemoComic() {
 export function DemoPodcast() {
   return <div className={styles.podcast}>
     <h3>{podcast.title}</h3><p className={styles.notice}>Lorem Ipsum is simply dummy text of the printing and typesetting industry.</p>
-    <audio controls preload="metadata" src="/demo/podcast-demo.wav" aria-label="Podcast de demostración: La espera">Tu navegador no admite audio. Usa el enlace de descarga o lee la transcripción.</audio>
+    <AudioPlayer />
     <a className="text-link" href="/demo/podcast-demo.wav" download>Descargar muestra WAV ↓</a>
     <details><summary>Transcripción</summary><div className={styles.transcript}>{podcast.transcript.map(paragraph => <p key={paragraph}>{paragraph}</p>)}</div></details>
   </div>;

@@ -1,6 +1,7 @@
 import { test, expect, Page } from '@playwright/test';
 
 const comicKey = 'reservas:progress:v1:comic-la-espera';
+const audioKey = 'reservas:progress:v1:podcast-la-espera';
 async function swipe(page: Page, dx: number, dy: number, touches = 1) {
   await page.locator('[data-comic-body]').evaluate((element, gesture) => {
     const points = Array.from({ length: gesture.touches }, (_, identifier) => new Touch({ identifier, target: element, clientX: 250, clientY: 200 }));
@@ -63,11 +64,90 @@ test('comic clamps corrupt progress and survives blocked storage', async ({ page
   await expect(page.getByRole('dialog')).toContainText('Página 2 de 3');
 });
 
+test('custom podcast controls use real WAV events and resume without autoplay', async ({ page }, testInfo) => {
+  await page.goto('/podcast');
+  const audio = page.locator('audio').first();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).duration)).toBeGreaterThan(85);
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).duration)).toBeLessThan(87);
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).paused)).toBe(true);
+  await page.getByRole('button', { name: 'Reproducir audio', exact: true }).click();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).currentTime)).toBeGreaterThan(.1);
+  await page.getByRole('button', { name: 'Pausar audio', exact: true }).click();
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).paused)).toBe(true);
+  await page.getByLabel('Velocidad del audio').selectOption('1.5');
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).playbackRate)).toBe(1.5);
+  await page.getByRole('slider', { name: 'Posición del audio', exact: true }).fill('30');
+  await page.getByRole('button', { name: 'Avanzar 15 segundos', exact: true }).click();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).currentTime)).toBeCloseTo(45, 0);
+  await page.getByRole('button', { name: 'Retroceder 15 segundos', exact: true }).click();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).currentTime), { timeout: 15000 }).toBeCloseTo(30, 0);
+  await page.getByRole('button', { name: 'Silenciar audio', exact: true }).click();
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).muted)).toBe(true);
+  await page.getByRole('slider', { name: 'Volumen del audio', exact: true }).fill('0.4');
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).volume)).toBe(.4);
+  await page.reload();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).currentTime), { timeout: 15000 }).toBeCloseTo(30, 0);
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).paused)).toBe(true);
+  await page.getByRole('button', { name: 'Volver al inicio del audio', exact: true }).click();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).currentTime)).toBe(0);
+  await page.getByRole('button', { name: 'Retroceder 15 segundos', exact: true }).click();
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).currentTime)).toBe(0);
+  await page.getByText('Transcripción', { exact: true }).click();
+  await expect(page.locator('details[open] p')).toHaveCount(5);
+  await page.locator('[aria-label="Reproductor de audio"]').screenshot({ path: testInfo.outputPath('podcast-controls.png') });
+});
+
+test('audio fixture error and ended events reset honestly without overwriting comic', async ({ page }) => {
+  await page.goto('/podcast');
+  await page.evaluate(([comic, audio]) => { localStorage.setItem(comic, JSON.stringify({ position: 1 })); localStorage.setItem(audio, JSON.stringify({ position: 999999 })); }, [comicKey, audioKey]);
+  await page.reload();
+  const audio = page.locator('audio').first();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).duration)).toBeGreaterThan(85);
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).currentTime)).toBeLessThan(86);
+  await audio.evaluate(e => e.dispatchEvent(new Event('ended')));
+  await expect.poll(() => page.evaluate(key => JSON.parse(localStorage.getItem(key)!).position, audioKey)).toBe(0);
+  expect(await page.evaluate(key => JSON.parse(localStorage.getItem(key)!).position, comicKey)).toBe(1);
+  await audio.evaluate(e => e.dispatchEvent(new Event('error')));
+  await expect(page.locator('[aria-label="Reproductor de audio"]').getByRole('alert')).toContainText('No se pudo');
+});
+
+test('audio accepts malformed or blocked local storage without blocking playback', async ({ page }) => {
+  await page.goto('/podcast');
+  await page.evaluate(key => localStorage.setItem(key, '{broken'), audioKey);
+  await page.reload();
+  const audio = page.locator('audio').first();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).duration)).toBeGreaterThan(85);
+  expect(await audio.evaluate(e => (e as HTMLAudioElement).currentTime)).toBe(0);
+  await page.evaluate(() => { Storage.prototype.getItem = () => { throw new Error('blocked'); }; Storage.prototype.setItem = () => { throw new Error('blocked'); }; });
+  await page.getByRole('button', { name: 'Reproducir audio', exact: true }).click();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).currentTime)).toBeGreaterThan(.1);
+  await page.getByRole('button', { name: 'Pausar audio', exact: true }).click();
+});
+
+test('audio rejection fixture and route cleanup do not leave playback behind', async ({ page }) => {
+  await page.goto('/podcast');
+  const audio = page.locator('audio').first();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).duration)).toBeGreaterThan(85);
+  await audio.evaluate(e => { (e as HTMLAudioElement).play = () => Promise.reject(new DOMException('Fixture denial', 'NotAllowedError')); });
+  await page.getByRole('button', { name: 'Reproducir audio', exact: true }).click();
+  await expect(page.locator('[aria-label="Reproductor de audio"]').getByRole('alert')).toContainText('No se pudo reproducir');
+  await page.reload();
+  await page.getByRole('button', { name: 'Reproducir audio', exact: true }).click();
+  await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).paused)).toBe(false);
+  await audio.evaluate(e => { (window as unknown as { detachedAudio: HTMLAudioElement }).detachedAudio = e as HTMLAudioElement; });
+  await page.locator('a[href="/"]').first().click();
+  await expect.poll(() => page.evaluate(() => (window as unknown as { detachedAudio: HTMLAudioElement }).detachedAudio.paused)).toBe(true);
+});
+
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
-  test('comic story remains readable', async ({ page }) => {
+  test('comic story and native podcast remain accessible', async ({ page }) => {
     await page.goto('/comic');
     const story = page.getByRole('region', { name: 'Historia del cómic sin JavaScript' });
     await expect(story.getByRole('heading', { level: 3 })).toHaveText(['La sala de espera', 'Las preguntas', 'Una red de apoyo']);
+    await page.goto('/podcast');
+    await expect(page.locator('audio')).toHaveAttribute('controls', '');
+    await page.getByText('Transcripción', { exact: true }).click();
+    await expect(page.locator('details[open] p')).toHaveCount(5);
   });
 });
