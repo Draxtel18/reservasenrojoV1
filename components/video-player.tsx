@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { documentary } from '@/content/editorial';
+import { documentaryAccessibility } from '@/content/documentary-accessibility';
 import { loadYouTubeApi, type VideoPlayer } from '@/lib/youtube-player';
+import { readProgress, writeProgress } from '@/lib/playback-progress';
 import styles from './video-player.module.css';
 
 function clock(value: number) {
@@ -13,9 +15,14 @@ function clock(value: number) {
 }
 
 export function Documentary() {
+  const progressKey = `video-${documentary.id}`;
   const shell = useRef<HTMLDivElement>(null);
   const iframe = useRef<HTMLIFrameElement>(null);
   const player = useRef<VideoPlayer | null>(null);
+  const initialized = useRef(false);
+  const restoreTarget = useRef(0);
+  const lastSaved = useRef(-1);
+  const finished = useRef(false);
   const [origin, setOrigin] = useState<string | null>(null);
   const [ready, setReady] = useState(false);
   const [playing, setPlaying] = useState(false);
@@ -25,18 +32,48 @@ export function Documentary() {
   const [muted, setMuted] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [status, setStatus] = useState('Preparando reproductor…');
+  const [savedPosition, setSavedPosition] = useState(0);
 
-  function sync() {
+  useEffect(() => { setSavedPosition(readProgress(progressKey)); }, [progressKey]);
+
+  function restore(instance: VideoPlayer) {
+    const length = instance.getDuration();
+    if (initialized.current || !Number.isFinite(length) || length <= 0) return;
+    const saved = readProgress(progressKey);
+    const next = saved > 0 && saved < length - 2 ? saved : 0;
+    initialized.current = true;
+    restoreTarget.current = next;
+    lastSaved.current = Math.floor(next);
+    setSavedPosition(next);
+    if (next > 0) instance.seekTo(next, true);
+  }
+
+  function save(time: number, length: number) {
+    if (!initialized.current || !Number.isFinite(time) || !Number.isFinite(length) || time < 0 || length <= 0) return;
+    // A provider seek is asynchronous. Keep the saved point until it takes effect.
+    if (restoreTarget.current > 0 && time < restoreTarget.current - 2) return;
+    restoreTarget.current = 0;
+    const next = time >= length - 1 ? 0 : Math.floor(time);
+    if (lastSaved.current !== next) { writeProgress(progressKey, next); lastSaved.current = next; }
+  }
+
+  function sync(persist = false) {
     const instance = player.current;
     if (!instance || typeof instance.getCurrentTime !== 'function') return;
-    setPosition(Math.max(0, instance.getCurrentTime() || 0));
-    setDuration(Math.max(0, instance.getDuration() || 0));
+    restore(instance);
+    const time = Math.max(0, instance.getCurrentTime() || 0);
+    const length = Math.max(0, instance.getDuration() || 0);
+    setPosition(restoreTarget.current > time + 2 ? restoreTarget.current : time);
+    setDuration(length);
     setVolume(instance.getVolume());
     setMuted(instance.isMuted());
+    if (persist) save(time, length);
   }
 
   useEffect(() => {
     if (!origin) return;
+    initialized.current = false;
+    finished.current = false;
     let active = true;
     let failed = false;
     const fail = () => {
@@ -62,7 +99,11 @@ export function Documentary() {
           if (!active || failed) return;
           setPlaying(event.data === 1 || event.data === 3);
           setStatus(event.data === 1 ? 'Reproduciendo' : event.data === 3 ? 'Cargando…' : event.data === 0 ? 'Finalizado' : 'En pausa');
-          sync();
+          if (event.data === 0) {
+            finished.current = true; lastSaved.current = 0; restoreTarget.current = 0;
+            writeProgress(progressKey, 0); setSavedPosition(0);
+          } else if (event.data === 1) finished.current = false;
+          sync(event.data === 1 || event.data === 2);
         },
         onError: fail,
         onAutoplayBlocked() { if (active && !failed) { setPlaying(false); setStatus('Selecciona Reproducir para iniciar el video.'); } },
@@ -72,14 +113,18 @@ export function Documentary() {
     return () => {
       active = false;
       const instance = player.current;
+      if (instance && !finished.current) {
+        try { save(instance.getCurrentTime(), instance.getDuration()); } catch { /* Provider may already be unavailable. */ }
+      }
       player.current = null;
       instance?.destroy();
+      initialized.current = false;
     };
   }, [origin]);
 
   useEffect(() => {
     if (!ready || !playing) return;
-    const timer = window.setInterval(sync, 250);
+    const timer = window.setInterval(() => sync(true), 250);
     return () => window.clearInterval(timer);
   }, [ready, playing]);
 
@@ -95,7 +140,13 @@ export function Documentary() {
   }
   function seek(value: number) {
     const next = Math.max(0, Math.min(duration, value));
-    player.current?.seekTo(next, true); setPosition(next);
+    restoreTarget.current = 0; finished.current = false;
+    player.current?.seekTo(next, true); setPosition(next); save(next, duration);
+  }
+  function restart() {
+    restoreTarget.current = 0; lastSaved.current = 0; finished.current = false;
+    writeProgress(progressKey, 0); setSavedPosition(0); setPosition(0);
+    if (ready) player.current?.seekTo(0, true);
   }
   function changeVolume(value: number) {
     player.current?.setVolume(value);
@@ -124,6 +175,10 @@ export function Documentary() {
         <button className="play-documentary" onClick={() => setOrigin(location.origin)}><span className="play-symbol" aria-hidden="true">▶</span><span>Reproducir reportaje</span></button>
       </>}
     </div>
+    {!origin && savedPosition > 0 && savedPosition < 86400 && <div className={styles.resume} role="note">
+      <p>Punto guardado: {clock(savedPosition)}</p><span>Se retomará al reproducir. Guardado solo en este dispositivo.</span>
+      <button onClick={restart}>Empezar desde cero</button>
+    </div>}
     {origin && <div className={styles.controls}>
       <input className={styles.seek} type="range" aria-label="Posición del video" aria-valuetext={`${clock(position)} de ${clock(duration)}`} min="0" max={duration || 1} step="1" value={Math.min(position, duration || 1)} disabled={!ready || !duration} onChange={event => seek(Number(event.target.value))} />
       <div className={styles.controlRow}>
@@ -134,7 +189,15 @@ export function Documentary() {
         <input className={styles.volume} type="range" aria-label="Volumen" min="0" max="100" step="1" value={muted ? 0 : volume} disabled={!ready} onChange={event => changeVolume(Number(event.target.value))} />
         <button disabled={!ready && !fullscreen} onClick={toggleFullscreen} aria-label={fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'} title="Pantalla completa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5" fill="none" stroke="currentColor" strokeWidth="2" /></svg></button>
       </div>
+      <button className={styles.restart} disabled={!ready} onClick={restart}>Reiniciar video desde el comienzo</button>
       <div className={styles.playerInfo}><p role="status">{status}</p><a href={`https://www.youtube.com/watch?v=${documentary.id}`} target="_blank" rel="noreferrer">Abrir en YouTube<span className="sr-only"> (otra pestaña)</span></a></div>
     </div>}
+    <section className={styles.accessibility} aria-labelledby="documentary-accessibility-title">
+      <h3 id="documentary-accessibility-title">Capítulos y transcripción</h3>
+      {!documentaryAccessibility.reviewed ? <p>Pendientes de incorporar y revisar con el material original. No se publican textos ni marcas de tiempo sin validar.</p> : <>
+        <nav aria-label="Capítulos del reportaje">{documentaryAccessibility.chapters.map((chapter, index, chapters) => <button key={chapter.start} disabled={!ready} onClick={() => seek(chapter.start)} aria-current={position >= chapter.start && position < (chapters[index + 1]?.start ?? Infinity) ? 'true' : undefined}>{clock(chapter.start)} · {chapter.title}</button>)}</nav>
+        <ol>{documentaryAccessibility.transcript.map(cue => <li key={cue.start}><button disabled={!ready} onClick={() => seek(cue.start)}>{clock(cue.start)} · {cue.text}</button></li>)}</ol>
+      </>}
+    </section>
   </div>;
 }

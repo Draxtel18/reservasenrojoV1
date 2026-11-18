@@ -15,6 +15,17 @@
 .playerInfo { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px 24px; border-top: 1px solid #444; padding-top: 14px; margin-top: 12px; font-size: 13px; line-height: 1.6; }
 .playerInfo p { margin: 0; }
 .playerInfo a { text-decoration: underline; text-underline-offset: 4px; }
+.resume, .accessibility { padding: 20px 22px; font-size: 14px; line-height: 1.7; }
+.resume p { margin: 0; font-weight: 700; }
+.resume span { display: block; }
+.resume button, .restart { min-height: 44px; border: 0; background: transparent; color: inherit; padding: 10px 0; text-decoration: underline; text-underline-offset: 4px; }
+.accessibility { background: var(--paper); color: var(--ink); }
+.accessibility h3 { font-size: 20px; margin: 0 0 10px; }
+.accessibility p { max-width: 65ch; margin: 0; }
+.accessibility nav { display: flex; flex-wrap: wrap; gap: 10px; }
+.accessibility button { padding: 12px; border: 0; background: transparent; color: inherit; min-height: 44px; text-align: left; }
+.accessibility button[aria-current="true"] { text-decoration: underline; }
+.player:fullscreen .accessibility { display: none; }
 .player:fullscreen { height: 100%; display: flex; flex-direction: column; }
 .player:fullscreen .frame { flex: 1; aspect-ratio: auto; min-height: 0; }
 .player:fullscreen .controls { flex: 0 0 auto; }

@@ -78,3 +78,58 @@ test('a slow player does not start automatically after the visitor scrolls away'
   await expect(page.getByRole('button', { name: 'Reproducir video', exact: true })).toBeEnabled();
   expect(await page.evaluate(() => (window as Window & { __videoCalls?: string[] }).__videoCalls)).not.toContain('play');
 });
+
+test('video resumes locally only after activation and can restart without affecting other media', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('reservas:progress:v1:video-w7axbt3LLbg', JSON.stringify({ position: 38 }));
+    localStorage.setItem('reservas:progress:v1:comic-la-espera', JSON.stringify({ position: 2 }));
+  });
+  let requests = 0;
+  await page.route('https://www.youtube.com/iframe_api', route => { requests++; return route.fulfill({ contentType: 'application/javascript', body: api }); });
+  await page.route('https://www.youtube-nocookie.com/**', route => route.fulfill({ contentType: 'text/html', body: '<html>Provider fixture</html>' }));
+  await page.goto('/reportaje');
+  await expect(page.getByText('Punto guardado: 0:38', { exact: true })).toBeVisible();
+  expect(requests).toBe(0);
+  await clickControl(page.getByRole('button', { name: 'Reproducir reportaje', exact: true }));
+  await expect(page.getByText('0:38 / 2:00', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => (window as Window & { __videoCalls?: string[] }).__videoCalls)).toContain('seek:38');
+  const seek = page.getByRole('slider', { name: 'Posición del video', exact: true });
+  await seek.focus(); await seek.press('ArrowRight');
+  await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:video-w7axbt3LLbg')!).position)).toBe(39);
+  await clickControl(page.getByRole('button', { name: 'Reiniciar video desde el comienzo', exact: true }));
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:video-w7axbt3LLbg')!).position)).toBe(0);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:comic-la-espera')!).position)).toBe(2);
+});
+
+test('video ignores invalid saved positions and handles blocked storage without invented transcript', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('reservas:progress:v1:video-w7axbt3LLbg', JSON.stringify({ position: 99999 })));
+  await page.route('https://www.youtube.com/iframe_api', route => route.fulfill({ contentType: 'application/javascript', body: api }));
+  await page.route('https://www.youtube-nocookie.com/**', route => route.fulfill({ contentType: 'text/html', body: '<html>Provider fixture</html>' }));
+  await page.goto('/reportaje');
+  await expect(page.getByText('Capítulos y transcripción', { exact: true })).toBeVisible();
+  await expect(page.getByText(/Pendientes de incorporar y revisar/)).toBeVisible();
+  await clickControl(page.getByRole('button', { name: 'Reproducir reportaje', exact: true }));
+  await expect(page.getByText('0:00 / 2:00', { exact: true })).toBeVisible();
+  expect(await page.evaluate(() => (window as Window & { __videoCalls?: string[] }).__videoCalls)).not.toContain('seek:99999');
+  await page.evaluate(() => {
+    Storage.prototype.getItem = () => { throw new DOMException('Blocked', 'SecurityError'); };
+    Storage.prototype.setItem = () => { throw new DOMException('Blocked', 'SecurityError'); };
+  });
+  await page.getByRole('slider', { name: 'Posición del video', exact: true }).focus();
+  await page.getByRole('slider', { name: 'Posición del video', exact: true }).press('ArrowRight');
+  await expect(page.getByRole('button', { name: 'Pausar video', exact: true })).toBeEnabled();
+  await expect(page.getByText('0:01 / 2:00', { exact: true })).toBeVisible();
+});
+
+test('a delayed provider seek cannot overwrite the saved video position with zero', async ({ page }) => {
+  await page.addInitScript(() => localStorage.setItem('reservas:progress:v1:video-w7axbt3LLbg', JSON.stringify({ position: 38 })));
+  const delayedSeek = api.replace('this.time=time;window.__videoCalls.push(\'seek:\'+time);', 'window.__videoCalls.push(\'seek:\'+time);');
+  await page.route('https://www.youtube.com/iframe_api', route => route.fulfill({ contentType: 'application/javascript', body: delayedSeek }));
+  await page.route('https://www.youtube-nocookie.com/**', route => route.fulfill({ contentType: 'text/html', body: '<html>Provider fixture</html>' }));
+  await page.goto('/reportaje');
+  await clickControl(page.getByRole('button', { name: 'Reproducir reportaje', exact: true }));
+  await expect(page.getByText('0:38 / 2:00', { exact: true })).toBeVisible();
+  await clickControl(page.getByRole('button', { name: 'Pausar video', exact: true }));
+  await page.getByRole('link', { name: 'Equipo', exact: true }).first().click();
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:video-w7axbt3LLbg')!).position)).toBe(38);
+});
