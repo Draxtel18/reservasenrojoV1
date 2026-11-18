@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import { documentary } from '@/content/editorial';
 import { documentaryAccessibility } from '@/content/documentary-accessibility';
-import { loadYouTubeApi, type VideoPlayer } from '@/lib/youtube-player';
+import { loadYouTubeApi, type CaptionTrack, type VideoPlayer } from '@/lib/youtube-player';
 import { readProgress, writeProgress } from '@/lib/playback-progress';
 import styles from './video-player.module.css';
 
@@ -33,6 +33,8 @@ export function Documentary() {
   const [fullscreen, setFullscreen] = useState(false);
   const [status, setStatus] = useState('Preparando reproductor…');
   const [savedPosition, setSavedPosition] = useState(0);
+  const [captionTracks, setCaptionTracks] = useState<string[]>([]);
+  const [captionsOn, setCaptionsOn] = useState(false);
 
   useEffect(() => { setSavedPosition(readProgress(progressKey)); }, [progressKey]);
 
@@ -70,10 +72,20 @@ export function Documentary() {
     if (persist) save(time, length);
   }
 
+  function readCaptionTracks() {
+    const instance = player.current;
+    try {
+      const list = instance?.getOption?.('captions', 'tracklist');
+      if (!Array.isArray(list)) { setCaptionTracks([]); return; }
+      setCaptionTracks(list.map(track => String((track as CaptionTrack)?.languageCode ?? '')).filter(Boolean));
+    } catch { setCaptionTracks([]); }
+  }
+
   useEffect(() => {
     if (!origin) return;
     initialized.current = false;
     finished.current = false;
+    setCaptionsOn(false); setCaptionTracks([]);
     let active = true;
     let failed = false;
     const fail = () => {
@@ -89,6 +101,7 @@ export function Documentary() {
           if (!active || failed) return;
           player.current = event.target;
           setReady(true); sync();
+          readCaptionTracks();
           setStatus('Listo para reproducir.');
           // Do not start late playback if the visitor has already scrolled away.
           const bounds = iframe.current?.getBoundingClientRect();
@@ -167,6 +180,20 @@ export function Documentary() {
     } catch { setStatus('Pantalla completa no disponible en este navegador.'); }
   }
 
+  function toggleCaptions() {
+    const instance = player.current;
+    if (!instance) return;
+    const [first] = captionTracks;
+    if (!captionsOn) {
+      if (!first) { setStatus('Este video no expone pistas de subtítulos.'); return; }
+      try { instance.setOption?.('captions', 'track', { languageCode: first }); setCaptionsOn(true); }
+      catch { setStatus('No se pudieron activar los subtítulos.'); }
+      return;
+    }
+    try { instance.unloadModule?.('captions'); setCaptionsOn(false); }
+    catch { setStatus('No se pudieron desactivar los subtítulos.'); }
+  }
+
   const source = origin ? `https://www.youtube-nocookie.com/embed/${documentary.id}?${new URLSearchParams({ autoplay: '0', rel: '0', controls: '0', enablejsapi: '1', playsinline: '1', origin, hl: 'es' })}` : '';
   return <div ref={shell} className={styles.player} role="region" aria-label="Reproductor del reportaje">
     <div className={`cinema ${styles.frame}`}>
@@ -187,6 +214,7 @@ export function Documentary() {
         <span className={styles.brand}>Reservas en rojo</span>
         <button disabled={!ready} onClick={toggleMute} aria-label={muted ? 'Activar sonido' : 'Silenciar'} title={muted ? 'Activar sonido' : 'Silenciar'}><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor" /><path d={muted ? 'm17 9 5 6m0-6-5 6' : 'M17 8q5 4 0 8'} fill="none" stroke="currentColor" strokeWidth="2" /></svg></button>
         <input className={styles.volume} type="range" aria-label="Volumen" min="0" max="100" step="1" value={muted ? 0 : volume} disabled={!ready} onChange={event => changeVolume(Number(event.target.value))} />
+        <button className={styles.captions} disabled={!ready} onClick={toggleCaptions} aria-pressed={captionsOn} aria-label={captionsOn ? 'Desactivar subtítulos' : 'Activar subtítulos'} title={captionsOn ? 'Desactivar subtítulos' : 'Activar subtítulos'}><span aria-hidden="true">CC</span></button>
         <button disabled={!ready && !fullscreen} onClick={toggleFullscreen} aria-label={fullscreen ? 'Salir de pantalla completa' : 'Pantalla completa'} title="Pantalla completa"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4H4v5m11-5h5v5M4 15v5h5m6 0h5v-5" fill="none" stroke="currentColor" strokeWidth="2" /></svg></button>
       </div>
       <button className={styles.restart} disabled={!ready} onClick={restart}>Reiniciar video desde el comienzo</button>

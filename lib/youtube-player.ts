@@ -1,3 +1,5 @@
+export interface CaptionTrack { languageCode?: string; languageName?: string; displayName?: string }
+
 export interface VideoPlayer {
   playVideo(): void;
   pauseVideo(): void;
@@ -10,6 +12,11 @@ export interface VideoPlayer {
   unMute(): void;
   isMuted(): boolean;
   destroy(): void;
+  // Optional so providers and fixtures without caption support keep typechecking.
+  getOption?(module: string, option: string): unknown;
+  setOption?(module: string, option: string, value: Record<string, unknown>): void;
+  loadModule?(module: string): void;
+  unloadModule?(module: string): void;
 }
 
 interface PlayerEvents {
