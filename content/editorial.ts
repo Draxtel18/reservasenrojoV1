@@ -1,5 +1,5 @@
 export const documentary = {
-  id: 'w7axbt3LLbg',
+  id: '-KErtns1Jv0',
   title: 'Reservas en rojo',
   description: 'Una investigación sobre las dificultades de acceso a la sangre durante emergencias médicas en Piura, Perú.',
 };
@@ -42,11 +42,23 @@ export const readingNotes = [
 ];
 
 export const timelineNotes = [
-  { label: 'Entrada 01', title: 'Plantear la pregunta', text: 'El acceso a la sangre durante emergencias médicas en Piura es el punto de partida del proyecto.' },
-  { label: 'Entrada 02', title: 'Mirar el reportaje', text: 'El audiovisual proporcionado es la pieza principal disponible para explorar el tema.' },
-  { label: 'Entrada 03', title: 'Recorrer otros lenguajes', text: 'El cómic y la narración sonora ofrecen una historia ilustrada y una experiencia de escucha, no documentos de hechos acreditados.' },
-  { label: 'Entrada 04', title: 'Volver a las preguntas', text: 'El cuestionario invita a reconocer el enfoque del proyecto y el valor de las fuentes verificables.' },
-  { label: 'Entrada 05', title: 'Completar el contexto', text: 'La secuencia de hechos, sus fechas y las fuentes que la sustenten deben incorporarse antes de publicar una cronología factual.' },
+  { label: '1818', title: 'Primera transfusión humana exitosa', text: 'El inglés James Blundell realizó la primera transfusión de sangre humana.' },
+  { label: '1901', title: 'Descubrimiento de los grupos sanguíneos', text: 'El austriaco Karl Landsteiner logró identificar los grupos A, B y O.' },
+  { label: '1914', title: 'Conservación de sangre', text: 'Se utiliza citrato de sodio para evitar la coagulación y facilitar el almacenamiento.' },
+  { label: '1937', title: 'Primeros bancos', text: 'Se crea uno de los primeros bancos de sangre en Chicago, Estados Unidos.' },
+  { label: '1943', title: 'Primer banco de sangre en el Perú', text: 'Se fundó el primer banco de sangre en Perú, en el hospital 2 de mayo.' },
+  { label: '1948', title: 'Donación voluntaria y organizada', text: 'Se impulsa la donación voluntaria y organizada de sangre globalmente.' },
+  { label: '1952', title: 'Bolsas plásticas', text: 'Se implementan las bolsas plásticas para almacenar la sangre.' },
+  { label: '1975', title: 'Del vidrio al plástico', text: 'Las bolsas de plástico se generalizan en lugar de las botellas de vidrio.' },
+  { label: '1985', title: 'Detección del VIH', text: 'Se inicia el análisis de sangre donada para detectar el VIH.' },
+  { label: '1990', title: 'Detección de hepatitis C', text: 'Se incorpora la detección de hepatitis C en las donaciones.' },
+  { label: '2004', title: 'Día mundial del donante', text: 'Se establece el 14 de junio como el día mundial del donante de sangre.' },
+  { label: '2005', title: 'Servicios de donación y transfusión', text: 'Se fortalecen los servicios de donación y transfusión.' },
+  { label: '2017', title: 'Veinte bancos de sangre en el Perú', text: 'Sistemas Analíticos instaló 20 bancos de sangre en Perú y tamizó más de 380 mil bolsas.' },
+  { label: '2023', title: 'Donantes aptos', text: 'Se registraron 1,100 donantes aptos para donaciones de sangre.' },
+  { label: '2024', title: 'Composición de las donaciones', text: 'De 2,514 donantes, el 19% fue voluntario y el 80.1% por reposición.' },
+  { label: '2025', title: 'Unidades recaudadas', text: 'Se recaudaron 382,586 unidades; faltan 242,162 para cubrir la demanda de 624,748.' },
+  { label: '2026', title: 'La donación voluntaria salva vidas', text: 'La donación voluntaria salva millones de vidas mediante bancos de sangre y campañas.' },
 ];
 
 // Estimate only the available text, not the unpublished full report.

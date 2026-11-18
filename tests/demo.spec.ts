@@ -31,8 +31,8 @@ test('podcast demo has real playable audio and a labeled transcript', async ({ p
 
 test('chronology and the written report keep their honest structures', async ({ page }) => {
   await page.goto('/cronologia');
-  await expect(page.locator('#cronologia')).toContainText('Fechas y fuentes pendientes');
-  await expect(page.locator('.demo-timeline-item')).toHaveCount(5);
+  await expect(page.locator('#cronologia')).toContainText('línea de tiempo proporcionada');
+  await expect(page.locator('.demo-timeline-item')).toHaveCount(17);
   await page.goto('/lectura');
   await expect(page.locator('.article-index a')).toHaveCount(3);
   await expect(page.locator('article h3')).toHaveText(['El punto de partida', 'Qué busca el proyecto', 'Lo que falta por incorporar']);

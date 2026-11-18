@@ -8,8 +8,7 @@ test('reading and chronology carry real content with explicit pending states', a
   await expect(page.locator('#lectura')).not.toContainText('Lorem Ipsum');
 
   await page.goto('/cronologia');
-  await expect(page.locator('.demo-timeline-item')).toHaveCount(5);
-  await expect(page.locator('#cronologia')).toContainText('No es una secuencia de hechos verificados');
-  await expect(page.locator('#cronologia')).toContainText('Fechas y fuentes pendientes');
+  await expect(page.locator('.demo-timeline-item')).toHaveCount(17);
+  await expect(page.locator('#cronologia')).toContainText('línea de tiempo proporcionada');
   await expect(page.locator('#cronologia')).not.toContainText('Lorem Ipsum');
 });

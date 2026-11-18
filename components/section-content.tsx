@@ -14,7 +14,7 @@ export function SectionContent({ section }: { section: string }) {
     reportaje: (<section id="reportaje" className="documentary section dark" aria-labelledby="documentary-title">
         <div className="section-intro"><h2 id="documentary-title" data-reveal>La historia, de cerca</h2><p data-reveal>{documentary.description} Mira el reportaje completo.</p></div>
         <div data-reveal><Documentary /></div>
-        <div className="media-caption"><span>Reservas en rojo. Reportaje audiovisual.</span><a href={`https://www.youtube.com/watch?v=${documentary.id}`} target="_blank" rel="noreferrer">Ver en YouTube <span className="sr-only">(abre en otra pestaña)</span></a></div>
+        <div className="media-caption"><span>Reservas en rojo. Reportaje audiovisual.</span></div>
         <nav id="formatos" className="format-index" aria-label="Formatos de la investigación">{sections.slice(1).map(([id, label]) => <a key={id} href={`/${id}`}>{label}<span aria-hidden="true">↘</span></a>)}</nav>
       </section>),
     comic: (<section id="comic" className="section comic light" aria-labelledby="comic-title">
@@ -30,7 +30,7 @@ export function SectionContent({ section }: { section: string }) {
         <Quiz />
       </section>),
     cronologia: (<section id="cronologia" className="section timeline dark" aria-labelledby="timeline-title">
-        <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Cinco entradas para orientarte entre los contenidos. No es una secuencia de hechos verificados. Fechas y fuentes pendientes.</p></div>
+        <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Diecisiete hitos de la historia de la transfusión y la donación de sangre, en el mundo y en el Perú, según la línea de tiempo proporcionada para el proyecto.</p></div>
         <div className="timeline-layout"><ol className="demo-timeline">{timelineNotes.map(item => <li className="demo-timeline-item" key={item.label} data-reveal="row"><h3>{item.title}</h3><p className="timeline-date">{item.label}</p><p>{item.text}</p></li>)}</ol><figure data-reveal="media"><Photo name="donacion" alt="Una bolsa de sangre se encuentra en el equipo de extracción" /><figcaption>Fotografía proporcionada. Autoría y fecha pendientes.</figcaption></figure></div>
       </section>),
     lectura: (<section id="lectura" className="section written light" aria-labelledby="written-title">

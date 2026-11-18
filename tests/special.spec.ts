@@ -12,7 +12,7 @@ test('the editorial shell has eight sections, all formats and nine team profiles
   await expect(page.locator('.profile-name')).toHaveCount(9);
   await expect(page.locator('audio')).toHaveCount(0);
   await page.goto('/cronologia');
-  await expect(page.locator('.demo-timeline-item')).toHaveCount(5);
+  await expect(page.locator('.demo-timeline-item')).toHaveCount(17);
   await page.goto('/lectura');
   await expect(page.locator('#lectura')).toContainText('pendientes de incorporación');
 });
@@ -22,7 +22,7 @@ test('documentary loads the real privacy-enhanced embed only on request', async 
   await expect(page.locator('.cinema iframe')).toHaveCount(0);
   await page.getByRole('button', { name: 'Reproducir reportaje' }).click();
   const iframe = page.getByTitle('Reportaje audiovisual: Reservas en rojo');
-  await expect(iframe).toHaveAttribute('src', /youtube-nocookie\.com\/embed\/w7axbt3LLbg\?/);
+  await expect(iframe).toHaveAttribute('src', /youtube-nocookie\.com\/embed\/-KErtns1Jv0\?/);
   const source = new URL((await iframe.getAttribute('src'))!);
   expect(source.searchParams.get('autoplay')).toBe('0');
   expect(source.searchParams.get('controls')).toBe('0');

@@ -67,7 +67,6 @@ section, #formatos { scroll-margin-top: 105px; }
 .play-symbol { display: grid; place-items: center; width: 86px; height: 86px; border-radius: 50%; background: var(--red); font-size: 24px; padding-left: 5px; transition: transform .3s; }
 .play-documentary:hover .play-symbol { transform: scale(1.08); }
 .media-caption { display: flex; justify-content: space-between; gap: 20px; margin-top: 16px; font-size: 13px; }
-.media-caption a { text-decoration: underline; text-underline-offset: 4px; }
 .format-index { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 60px; }
 .format-index a { display: flex; justify-content: space-between; background: #191919; padding: 21px 24px; font-size: 13px; transition: background .2s; }
 .format-index a:hover { background: var(--deep); }
@@ -299,7 +298,6 @@ html[data-motion="enabled"] [data-motion-state="pending"] { opacity: 0; }
   .play-documentary { gap: 15px; font-size: 13px; }
   .play-symbol { width: 54px; height: 54px; font-size: 24px; }
   .media-caption { display: block; }
-  .media-caption a { display: inline-block; margin-top: 10px; padding-block: 8px; }
   .format-index { grid-template-columns: repeat(2, 1fr); padding-top: 35px; }
   .format-index a { padding: 18px 15px; font-size: 13px; }
   .comic-cover { max-width: 340px; padding: 28px; margin-top: 14px; }
