@@ -1,7 +1,7 @@
 import Image from 'next/image';
-import { Quiz } from '@/components/interactions';
 import { Documentary } from '@/components/video-player';
 import { DemoComic, DemoComicCover, DemoPodcast } from '@/components/demo-media';
+import { GameEmbed } from '@/components/game-embed';
 import { documentary, editorial, readingMinutes, readingNotes, sections, timelineNotes } from '@/content/editorial';
 import { demoTeam } from '@/content/demo';
 
@@ -25,9 +25,9 @@ export function SectionContent({ section }: { section: string }) {
         <div className="podcast-art" data-reveal><Photo name="procedimiento" alt="Detalle del trabajo del personal durante una extracción" /><span>La investigación<br />también se escucha.</span></div>
         <div className="podcast-copy"><h2 id="podcast-title" data-reveal>Escuchar para entender</h2><p data-reveal>Una narración que acompaña el relato ilustrado. Escucha, pausa o sigue la historia con su transcripción.</p><DemoPodcast /></div>
       </section>),
-    participa: (<section id="participa" className="section participation light" aria-labelledby="quiz-title">
-        <div className="quiz-intro"><h2 id="quiz-title" data-reveal>Leer. Mirar. Cuestionar.</h2><p data-reveal>Tres preguntas para acercarte al enfoque del proyecto y reflexionar sobre cómo nos informamos.</p><p className="small-copy">Basado en la presentación del proyecto. No incluye datos médicos ni afirmaciones no verificadas del reportaje.</p><Photo name="prueba" alt="Personal sanitario realiza una prueba en el dedo de una persona" /></div>
-        <Quiz />
+    participa: (<section id="participa" className="section participation-game light" aria-labelledby="game-title">
+        <div className="game-head"><h2 id="game-title" data-reveal>Salva vidas, decide bien</h2><p data-reveal>Un juego sobre la donación de sangre. Se juega aquí mismo y cada decisión cuenta.</p><p className="small-copy">Contenido alojado en un sitio externo del proyecto. No sustituye el reportaje ni aporta datos médicos verificados.</p></div>
+        <GameEmbed />
       </section>),
     cronologia: (<section id="cronologia" className="section timeline dark" aria-labelledby="timeline-title">
         <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Diecisiete hitos de la historia de la transfusión y la donación de sangre, en el mundo y en el Perú, según la línea de tiempo proporcionada para el proyecto.</p></div>

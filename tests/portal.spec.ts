@@ -109,7 +109,7 @@ test('back to top scrolls smoothly on every activation and across routes', async
   await expect(page.locator('h1')).toHaveText('Reservas en rojo');
 });
 
-test('motion is choreographed and quiz answers still react', async ({ page }) => {
+test('motion is choreographed and the home portal reacts', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
   const portal = page.locator('.portal-link').first();
@@ -117,8 +117,6 @@ test('motion is choreographed and quiz answers still react', async ({ page }) =>
   await portal.hover();
   await expect.poll(() => portal.locator('.portal-arrow').evaluate(element => getComputedStyle(element).transform)).not.toBe('none');
   await page.goto('/participa');
-  await page.getByRole('button', { name: 'Piura', exact: true }).click();
-  await expect(page.locator('.quiz-feedback')).toContainText('Respuesta correcta.');
   await expect(page.getByRole('button', { name: /animaciones/i })).toHaveCount(0);
   await expect(page.locator('html')).toHaveAttribute('data-motion', 'enabled');
   await expect(page.locator('h1')).toBeVisible();

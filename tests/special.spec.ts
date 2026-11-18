@@ -43,21 +43,37 @@ test('comic identifies its imagined narrative and restores keyboard focus', asyn
   await expect(page.getByRole('button', { name: 'Explorar cómic' })).toBeFocused();
 });
 
-test('quiz provides feedback, prevents double scoring, progresses, reports and resets', async ({ page }) => {
+test('the gamification section embeds the project game', async ({ page }) => {
   await page.goto('/participa');
-  const quiz = page.locator('.quiz');
-  for (const [index, answer] of ['Piura', 'El acceso a la sangre en emergencias', 'Fuentes y evidencia verificables'].entries()) {
-    await expect(quiz).toContainText(`Pregunta ${index + 1} de 3`);
-    await quiz.getByRole('button', { name: answer, exact: true }).click();
-    await expect(quiz).toContainText('Respuesta correcta.');
-    await expect(quiz.locator('.answer:disabled')).toHaveCount(3);
-    await quiz.getByRole('button', { name: index === 2 ? 'Ver resultado' : 'Siguiente pregunta' }).click();
+  const game = page.locator('#participa iframe');
+  await expect(game).toHaveCount(1);
+  await expect(game).toHaveAttribute('src', 'https://yeicotjj.github.io/gamificacion-donar-sangre/');
+  expect((await game.getAttribute('title'))?.trim().length).toBeGreaterThan(0);
+  await expect(game).toHaveAttribute('loading', 'lazy');
+  await expect(page.locator('.quiz')).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: 'Salva vidas, decide bien' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Abrir en una pestaña nueva' })).toHaveAttribute('href', 'https://yeicotjj.github.io/gamificacion-donar-sangre/');
+  await expect(page.locator('#participa img')).toHaveCount(0);
+  const enlarge = page.getByRole('button', { name: 'Ampliar el juego' });
+  await expect(enlarge).toBeVisible();
+  await expect(enlarge).toBeEnabled();
+  await enlarge.click();
+  const entered = await page
+    .waitForFunction(() => document.fullscreenElement !== null, undefined, { timeout: 4000 })
+    .then(() => true)
+    .catch(() => false);
+  if (entered) {
+    await expect(page.getByRole('button', { name: 'Reducir el juego' })).toHaveAttribute('aria-pressed', 'true');
+    await page.getByRole('button', { name: 'Reducir el juego' }).click();
+    await expect.poll(() => page.evaluate(() => document.fullscreenElement === null)).toBe(true);
+    await expect(page.getByRole('button', { name: 'Ampliar el juego' })).toHaveAttribute('aria-pressed', 'false');
+  } else {
+    // Headless without a usable Fullscreen API: the control must not fake success.
+    await expect(page.getByRole('button', { name: 'Ampliar el juego' })).toHaveAttribute('aria-pressed', 'false');
   }
-  await expect(quiz.locator('.score')).toHaveText('3 de 3');
-  await quiz.getByRole('button', { name: 'Reiniciar cuestionario' }).click();
-  await expect(quiz).toContainText('Pregunta 1 de 3');
-  await quiz.getByRole('button', { name: 'Lima', exact: true }).click();
-  await expect(quiz).toContainText('Revisemos la respuesta.');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.reload();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
 });
 
 test('mobile menu, anchors and escape work without horizontal overflow', async ({ page }) => {
