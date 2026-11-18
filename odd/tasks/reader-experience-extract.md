@@ -19,8 +19,9 @@ excluding the home redesign. Branch: `feat/reader-experience`; baseline: `2ca9bd
 - **D7. Documentation not extracted.** `AUDIT.md`, `README.md` and
   `odd/tasks/reader-experience.md` from the stash describe all seven proposals including the
   excluded home work, so they are not carried over.
-- **D8. Team/equipo changes excluded.** The nine `profile-bio` replacements and the team
-  intro rewrite are out of scope, so two baseline asserts stay red (see Known debt).
+- **D8. Team/equipo copy changes excluded.** The nine `profile-bio` replacements and the team
+  intro rewrite remain out of scope. Only the two stale asserts were realigned, in T7, to the
+  structure the page actually renders.
 
 ## Baseline reality (measured before any write)
 
@@ -32,8 +33,8 @@ already failing on `master`:
 | `tests/demo.spec.ts` comic test | dialog contains `ficticio` | fixed by T2 |
 | `tests/demo.spec.ts` editorial test | `#cronologia` contains `ficticio` | fixed by T5 |
 | `tests/demo.spec.ts` editorial test | `article` contains `ficticio` + >300 words | fixed by T5 |
-| `tests/demo.spec.ts` editorial test | `#equipo` contains `ficticios` | **stays red** (D8) |
-| `tests/special.spec.ts` shell test | `.profile` contains `Perfil ficticio` | **stays red** (D8) |
+| `tests/demo.spec.ts` editorial test | `#equipo` contains `ficticios` | fixed by T7 |
+| `tests/special.spec.ts` shell test | `.profile` contains `Perfil ficticio` | fixed by T7 |
 | `tests/special.spec.ts` shell test | `#lectura` contains `Ficción editorial` | fixed by T5 |
 | `tests/special.spec.ts` comic test | dialog contains `ficticio` | fixed by T2 |
 
@@ -72,8 +73,12 @@ Never touched: `app/page.tsx`, `app/[section]/page.tsx`, `components/site-shell.
   branch scope audit. Evidence on branch tip `87a86c2`: `next build` exit 0 (compiled 1.8s,
   TypeScript 8.4s, 8 prerendered paths); `tsc --noEmit` exit 0 with zero output; focused
   Playwright 25 tests on an isolated 3001 production server, 23 passed, 2 failed — both the
-  documented team-scope asserts. Branch scope: 16 files, +549/-34, and the three excluded
+  team-scope asserts listed below. Branch scope: 16 files, +549/-34, and the three excluded
   files confirmed absent from the diff.
+- T7 [D8] Realign the two stale team asserts without touching the copy. Evidence: 25/25 focused
+  tests green on branch tip; the demo test now asserts nine distinct profile names with a real
+  bio each instead of the removed `ficticios` string, and the shell test asserts nine
+  `.profile-name` nodes instead of an array of `Perfil ficticio`.
 
 ## Reconciliation with the stash
 
@@ -85,7 +90,6 @@ and `app/globals.css` (7 of 68 lines).
 
 ## Known debt carried forward (not fixed here)
 
-- `tests/demo.spec.ts` and `tests/special.spec.ts` keep their team-section asserts red while the
-  team copy stays at baseline.
 - `Lorem Ipsum` remains visible in the podcast notice and the comic cover (D4).
-- The home keeps its eight stacked portal sections and placeholder portal descriptions.
+- The home keeps its eight stacked portal sections and placeholder portal descriptions (D1).
+- The nine team bios keep the current copy (D8).

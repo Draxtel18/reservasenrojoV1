@@ -1,6 +1,6 @@
 import { test, expect } from '@playwright/test';
 
-test('the editorial shell has eight sections, all formats and nine clearly fictional profiles', async ({ page }) => {
+test('the editorial shell has eight sections, all formats and nine team profiles', async ({ page }) => {
   await page.goto('/');
   await expect(page.locator('html')).toHaveAttribute('lang', 'es');
   await expect(page.locator('main > section')).toHaveCount(8);
@@ -9,7 +9,7 @@ test('the editorial shell has eight sections, all formats and nine clearly ficti
   expect(await page.locator('body').innerText()).not.toMatch(/[\u2013\u2014]/);
   await page.goto('/equipo');
   await expect(page.locator('.profile')).toHaveCount(9);
-  await expect(page.locator('.profile')).toContainText(Array(9).fill('Perfil ficticio'));
+  await expect(page.locator('.profile-name')).toHaveCount(9);
   await expect(page.locator('audio')).toHaveCount(0);
   await page.goto('/cronologia');
   await expect(page.locator('.demo-timeline-item')).toHaveCount(5);

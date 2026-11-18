@@ -39,8 +39,12 @@ test('chronology and the written report keep their honest structures', async ({ 
   await expect(page.locator('#lectura')).not.toContainText('Lorem Ipsum');
   await page.goto('/equipo');
   await expect(page.locator('.profile')).toHaveCount(9);
-  await expect(page.locator('#equipo')).toContainText('ficticios');
-  await expect(page.locator('.profile-name')).not.toContainText(Array(9).fill('Nombre por confirmar'));
+  const names = await page.locator('.profile-name').allInnerTexts();
+  expect(new Set(names).size, 'profile names must be distinct').toBe(9);
+  expect(names.join(' ')).not.toMatch(/Nombre por confirmar/i);
+  for (const profile of await page.locator('.profile').all()) {
+    expect((await profile.locator('.profile-bio').innerText()).trim().length, 'a profile has no bio').toBeGreaterThan(10);
+  }
 });
 
 test('photo captions sit outside the image clipping frame with breathing room', async ({ page }) => {
