@@ -26,7 +26,7 @@ export function SectionContent({ section }: { section: string }) {
         <div className="podcast-copy"><h2 id="podcast-title" data-reveal>Escuchar para entender</h2><p data-reveal>Una narración que acompaña el relato ilustrado. Escucha, pausa o sigue la historia con su transcripción.</p><DemoPodcast /></div>
       </section>),
     participa: (<section id="participa" className="section participation-game light" aria-labelledby="game-title">
-        <div className="game-head"><h2 id="game-title" data-reveal>Salva vidas, decide bien</h2></div>
+        <div className="game-head"><h2 id="game-title" data-reveal>Pulso Piura</h2></div>
         <GameEmbed />
       </section>),
     cronologia: (<section id="cronologia" className="section timeline dark" aria-labelledby="timeline-title">

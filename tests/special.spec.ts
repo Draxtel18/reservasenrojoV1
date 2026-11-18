@@ -47,12 +47,12 @@ test('the gamification section embeds the project game', async ({ page }) => {
   await page.goto('/participa');
   const game = page.locator('#participa iframe');
   await expect(game).toHaveCount(1);
-  await expect(game).toHaveAttribute('src', 'https://yeicotjj.github.io/gamificacion-donar-sangre/');
+  await expect(game).toHaveAttribute('src', 'https://banco-sangre.devisesoftware.net/');
   expect((await game.getAttribute('title'))?.trim().length).toBeGreaterThan(0);
   await expect(game).toHaveAttribute('loading', 'lazy');
   await expect(page.locator('.quiz')).toHaveCount(0);
-  await expect(page.getByRole('heading', { name: 'Salva vidas, decide bien' })).toBeVisible();
-  await expect(page.getByRole('link', { name: 'Abrir en una pestaña nueva' })).toHaveAttribute('href', 'https://yeicotjj.github.io/gamificacion-donar-sangre/');
+  await expect(page.getByRole('heading', { name: 'Pulso Piura' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Abrir en una pestaña nueva' })).toHaveAttribute('href', 'https://banco-sangre.devisesoftware.net/');
   await expect(page.locator('#participa img')).toHaveCount(0);
   const enlarge = page.getByRole('button', { name: 'Ampliar el juego' });
   await expect(enlarge).toBeVisible();
