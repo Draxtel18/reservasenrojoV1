@@ -30,7 +30,7 @@ export function SectionContent({ section }: { section: string }) {
         <GameEmbed />
       </section>),
     cronologia: (<section id="cronologia" className="section timeline dark" aria-labelledby="timeline-title">
-        <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Diecisiete hitos de la historia de la transfusión y la donación de sangre, en el mundo y en el Perú, según la línea de tiempo proporcionada para el proyecto.</p></div>
+        <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Diecisiete hitos de la historia de la transfusión y la donación de sangre, en el mundo y en el Perú.</p></div>
         <div className="timeline-layout"><ol className="demo-timeline">{timelineNotes.map(item => <li className="demo-timeline-item" key={item.label} data-reveal="row"><h3>{item.title}</h3><p className="timeline-date">{item.label}</p><p>{item.text}</p></li>)}</ol><figure data-reveal="media"><Photo name="donacion" alt="Una bolsa de sangre se encuentra en el equipo de extracción" /><figcaption>Fotografía proporcionada. Autoría y fecha pendientes.</figcaption></figure></div>
       </section>),
     lectura: (<section id="lectura" className="section written light" aria-labelledby="written-title">

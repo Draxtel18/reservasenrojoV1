@@ -27,7 +27,7 @@ export default async function SectionPage({ params }: { params: Promise<{ sectio
   return <main id="contenido" className="detail-page">
     <div className="detail-heading">
       <h1 tabIndex={-1} data-reveal="text">{titles[section]}</h1>
-      <p className="detail-deck" data-reveal="text">Una investigación multimedia sobre el acceso a la sangre en Piura, Perú.</p>
+      <p className="detail-deck" data-reveal="text">Un proyecto transmedia sobre el acceso a la sangre en Piura, Perú.</p>
       <nav aria-label="Navegación de la sección"><Link className="return-link" href="/" data-reveal="row">← Volver a la portada</Link></nav>
     </div>
     <SectionContent section={section} />

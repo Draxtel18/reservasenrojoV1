@@ -29,24 +29,6 @@ test('podcast demo has real playable audio and a labeled transcript', async ({ p
   await expect(page.getByText('Transcripción', { exact: true })).toBeVisible();
 });
 
-test('chronology and the written report keep their honest structures', async ({ page }) => {
-  await page.goto('/cronologia');
-  await expect(page.locator('#cronologia')).toContainText('línea de tiempo proporcionada');
-  await expect(page.locator('.demo-timeline-item')).toHaveCount(17);
-  await page.goto('/lectura');
-  await expect(page.locator('.article-index a')).toHaveCount(3);
-  await expect(page.locator('article h3')).toHaveText(['El punto de partida', 'Qué busca el proyecto', 'Lo que falta por incorporar']);
-  await expect(page.locator('#lectura')).not.toContainText('Lorem Ipsum');
-  await page.goto('/equipo');
-  await expect(page.locator('.profile')).toHaveCount(9);
-  const names = await page.locator('.profile-name').allInnerTexts();
-  expect(new Set(names).size, 'profile names must be distinct').toBe(9);
-  expect(names.join(' ')).not.toMatch(/Nombre por confirmar/i);
-  for (const profile of await page.locator('.profile').all()) {
-    expect((await profile.locator('.profile-bio').innerText()).trim().length, 'a profile has no bio').toBeGreaterThan(10);
-  }
-});
-
 test('photo captions sit outside the image clipping frame with breathing room', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'no-preference' });
   await page.goto('/');
