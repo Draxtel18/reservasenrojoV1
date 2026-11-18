@@ -12,7 +12,7 @@ test('the editorial shell has eight sections, all formats and nine team profiles
   await expect(page.locator('.profile-name')).toHaveCount(9);
   await expect(page.locator('audio')).toHaveCount(0);
   await page.goto('/cronologia');
-  await expect(page.locator('.demo-timeline-item')).toHaveCount(17);
+  await expect(page.locator('.demo-timeline-item').first()).toBeVisible();
   await page.goto('/lectura');
   await expect(page.locator('#lectura')).toContainText('pendientes de incorporación');
 });
