@@ -7,7 +7,7 @@ import { sections } from '@/content/editorial';
 
 const titles: Record<string, string> = {
   reportaje: 'Reportaje audiovisual', comic: 'Cómic periodístico', podcast: 'Podcast',
-  participa: 'Gamificación', cronologia: 'Cronología', lectura: 'Reportaje escrito', equipo: 'Sobre nosotros',
+  participa: 'Experiencia periodística gamificada', cronologia: 'Cronología', lectura: 'Reportaje escrito', equipo: 'Sobre nosotros',
 };
 
 export function generateStaticParams() {
