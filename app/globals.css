@@ -109,7 +109,6 @@ progress::-webkit-progress-value { background: var(--pink); }
 .quiz-result .score { font-size: var(--heading-size); font-weight: 900; letter-spacing: -.04em; }
 .quiz-result .button { margin-top: 24px; }
 .participation-game .game-head { max-width: 78ch; margin-bottom: 28px; }
-.participation-game .game-head p { max-width: 62ch; margin-top: 18px; }
 .timeline-layout { display: grid; grid-template-columns: 1fr 1.4fr; gap: 8%; align-items: center; }
 .timeline-pending { padding-left: 28px; border-left: 5px solid var(--red); }
 .timeline-pending h3 + p { margin-top: 24px; }
