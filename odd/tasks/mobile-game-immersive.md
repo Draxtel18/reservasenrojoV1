@@ -22,7 +22,8 @@ D4. The reduce control and the external link are hidden only for `(hover: none) 
 E1. Emulated Pixel 7, game in view, rotate to landscape: headless Edge enters native fullscreen, iframe box 915x412 (98% of viewport height), no reduce button and no external link in the accessibility tree; rotating back to portrait restores the inline stage and `aria-pressed="false"`.
 E2. `requestFullscreen` stubbed to reject: expanding yields `[data-overlay="true"]`, the iframe fills the viewport, `page.goBack()` and `Escape` both close the overlay and keep the URL, `document.body.style.overflow` returns to empty.
 E3. Screenshots: expanded landscape renders the game's menu at full size (no crop); landscape inline fallback renders the game unscaled inside a near viewport-height frame; portrait shows the game's own rotate prompt with both site controls visible.
-E4. Not run: `next build`, because `next dev` is serving 127.0.0.1:3000 and a build would overwrite its `.next`. No commit or push performed.
+E4. Not run: `next build`, because `next dev` is serving 127.0.0.1:3000 and a build would overwrite its `.next`.
+E5. Delivered on branch `feat/juego-movil`: 337b85a behaviour plus tests, bdbe03e this record, pushed to origin with upstream tracking. No pull request opened yet.
 
 ## Log
 L1. Request (verbatim):
