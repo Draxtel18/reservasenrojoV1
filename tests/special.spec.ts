@@ -58,19 +58,12 @@ test('the gamification section embeds the project game', async ({ page }) => {
   await expect(enlarge).toBeVisible();
   await expect(enlarge).toBeEnabled();
   await enlarge.click();
-  const entered = await page
-    .waitForFunction(() => document.fullscreenElement !== null, undefined, { timeout: 4000 })
-    .then(() => true)
-    .catch(() => false);
-  if (entered) {
-    await expect(page.getByRole('button', { name: 'Reducir el juego' })).toHaveAttribute('aria-pressed', 'true');
-    await page.getByRole('button', { name: 'Reducir el juego' }).click();
-    await expect.poll(() => page.evaluate(() => document.fullscreenElement === null)).toBe(true);
-    await expect(page.getByRole('button', { name: 'Ampliar el juego' })).toHaveAttribute('aria-pressed', 'false');
-  } else {
-    // Headless without a usable Fullscreen API: the control must not fake success.
-    await expect(page.getByRole('button', { name: 'Ampliar el juego' })).toHaveAttribute('aria-pressed', 'false');
-  }
+  // Native fullscreen or the viewport overlay that replaces it: both must report the real state.
+  await expect.poll(() => page.evaluate(() => document.fullscreenElement !== null || document.querySelector('[data-overlay="true"]') !== null)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Reducir el juego' })).toHaveAttribute('aria-pressed', 'true');
+  await page.getByRole('button', { name: 'Reducir el juego' }).click();
+  await expect.poll(() => page.evaluate(() => document.fullscreenElement === null && document.querySelector('[data-overlay="true"]') === null)).toBe(true);
+  await expect(page.getByRole('button', { name: 'Ampliar el juego' })).toHaveAttribute('aria-pressed', 'false');
   await page.setViewportSize({ width: 390, height: 844 });
   await page.reload();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
