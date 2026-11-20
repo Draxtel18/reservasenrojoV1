@@ -20,11 +20,10 @@ export function SectionContent({ section }: { section: string }) {
       </section>),
     comic: (<section id="comic" className="section comic light" aria-labelledby="comic-title">
         <div className="comic-copy">
-          <p className="status" data-reveal>Cómic periodístico · 10 páginas</p>
           <h2 id="comic-title" data-reveal>Otra forma de mirar</h2>
-          <p data-reveal>«Los vampiros» reconstruye la historia de Daniel, un joven de 24 años que paga S/ 1 200 por una sangre que nunca llega a su padre. Diez páginas ilustradas sobre la red que lucraba con la desesperación de las familias de Piura.</p>
+          <p data-reveal>«Los vampiros» reconstruye la historia de Daniel, un joven de 24 años que paga por una sangre que nunca llega a su padre. Diez páginas ilustradas sobre la red que lucraba con la desesperación de las familias de Piura.</p>
           <ComicReader />
-        </div>
+        </div>  
         <ComicCover />
       </section>),
     podcast: (<section id="podcast" className="section podcast deep" aria-labelledby="podcast-title">
