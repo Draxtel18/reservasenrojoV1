@@ -70,8 +70,9 @@ section, #formatos { scroll-margin-top: 105px; }
 .format-index { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; padding-top: 60px; }
 .format-index a { display: flex; justify-content: space-between; background: #191919; padding: 21px 24px; font-size: 13px; transition: background .2s; }
 .format-index a:hover { background: var(--deep); }
-.format-soon { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; min-width: 0; background: #191919; padding: 21px 24px; font-size: 13px; color: rgb(242 242 242 / .72); }
-.format-soon .portal-pill { margin-left: auto; }
+/* Keeps the label on the same padding line as the linked cells while the taller pill centres itself. */
+.format-soon { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 8px 12px; min-width: 0; background: #191919; padding: 21px 24px; font-size: 13px; color: rgb(242 242 242 / .72); }
+.format-soon .portal-pill { margin-left: auto; align-self: center; }
 .comic { display: grid; grid-template-columns: 1.15fr .85fr; align-items: center; gap: 8%; }
 .comic-copy { max-width: 52ch; }
 .comic-copy > p { margin-top: 26px; }
@@ -159,10 +160,11 @@ dialog::backdrop { background: rgb(13 13 13 / .8); }
 .footer { background: var(--paper); color: var(--ink); }
 .footer-bottom > a:first-child { background: transparent; }
 .portal { padding: 80px var(--margin); }
-.portal-index { display: flex; gap: 14px 30px; flex-wrap: wrap; padding-bottom: 60px; font-size: 13px; }
+.portal-index { display: flex; gap: 14px 30px; flex-wrap: wrap; align-items: baseline; padding-bottom: 60px; font-size: 13px; }
 .portal-index a { padding-block: 12px; }
 .portal-index a:hover, .portal-index a:focus-visible { color: var(--pink); }
-.portal-index-soon { display: inline-flex; align-items: center; gap: 10px; padding-block: 12px; color: rgb(242 242 242 / .72); }
+/* The pill is taller than the text line, so the row aligns by text baseline instead of centering the boxes. */
+.portal-index-soon { display: inline-flex; align-items: baseline; gap: 10px; padding-block: 12px; color: rgb(242 242 242 / .72); }
 /* Shared marker for formats that are temporarily closed. */
 .portal-pill { display: inline-flex; align-items: center; padding: 5px 14px; border: 1px solid currentColor; border-radius: 999px; font-size: 12px; font-weight: 600; line-height: 1.5; white-space: nowrap; }
 .portal-link { display: grid; grid-template-columns: 1fr 1.4fr; gap: 9%; align-items: center; }
