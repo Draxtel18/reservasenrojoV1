@@ -57,6 +57,29 @@ test('mobile comic keeps controls visible, distinguishes gestures and resumes lo
   await expect(trigger).toBeFocused();
 });
 
+test('comic balances the leftover space on tall screens without clipping short ones', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/comic');
+  await page.getByRole('button', { name: 'Explorar cómic', exact: true }).click();
+  const stage = page.locator('[data-comic-body]');
+  await expect(stage.locator('img').first()).toBeVisible();
+  const gaps = await stage.evaluate(element => {
+    const box = element.getBoundingClientRect();
+    const image = element.querySelector('img')!.getBoundingClientRect();
+    return { top: image.top - box.top, bottom: box.bottom - image.bottom };
+  });
+  expect(gaps.top).toBeGreaterThan(0);
+  expect(Math.abs(gaps.top - gaps.bottom)).toBeLessThanOrEqual(2);
+  await page.setViewportSize({ width: 360, height: 640 });
+  const short = await stage.evaluate(element => {
+    const box = element.getBoundingClientRect();
+    const image = element.querySelector('img')!.getBoundingClientRect();
+    return { top: Math.round(image.top - box.top), scrollable: element.scrollHeight - element.clientHeight };
+  });
+  expect(short.top).toBe(0);
+  expect(short.scrollable).toBeGreaterThan(0);
+});
+
 test('comic clamps corrupt progress and survives blocked storage', async ({ page }) => {
   await page.goto('/comic');
   await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ position: 9999.9 })), comicKey);
