@@ -24,13 +24,13 @@ export const demoArticle = [
 ];
 
 export const demoTeam = [
-  { name: 'Favio Palacios', role: 'Coordinación editorial', bio: 'Organiza el recorrido narrativo y conecta los formatos de esta maqueta.' },
-  { name: 'Alessandro Juarez', role: 'Investigación de muestra', bio: 'Ordena las preguntas y las notas ficticias del ejercicio.' },
+  { name: 'Favio Palacios', role: 'Coordinación editorial', bio: 'Organiza el recorrido narrativo y conecta los formatos.' },
+  { name: 'Alessandro Juarez', role: 'Investigación de muestra', bio: 'Ordena las preguntas y las notas.' },
   { name: 'Luis Alvarez', role: 'Guion audiovisual', bio: 'Explora la estructura de una historia en imágenes y secuencias.' },
   { name: 'Katia Ramos', role: 'Edición de video', bio: 'Trabaja el ritmo y las transiciones del equipo de demostración.' },
-  { name: 'Alicia Maldonado', role: 'Narrativa sonora', bio: 'Da forma al guion y a la transcripción del episodio sintético.' },
-  { name: 'Gabriele Ludeña', role: 'Ilustración editorial', bio: 'Convierte las escenas ficticias en viñetas vectoriales.' },
-  { name: 'Daniel Mena', role: 'Diseño de información', bio: 'Organiza la cronología y los elementos de lectura del prototipo.' },
-  { name: 'Liliana Peña', role: 'Fotografía de muestra', bio: 'Representa el rol fotográfico; no se le atribuyen las fotos originales.' },
+  { name: 'Alicia Maldonado', role: 'Narrativa sonora', bio: 'Da forma al guion y a la transcripción del episodio.' },
+  { name: 'Gabriele Ludeña', role: 'Ilustración editorial', bio: 'Convierte las escenas reales en viñetas vectoriales.' },
+  { name: 'Daniel Mena', role: 'Diseño de información', bio: 'Organiza la cronología y los elementos de lectura.' },
+  { name: 'Liliana Peña', role: 'Fotografía de muestra', bio: 'Representa el rol fotográfico.' },
   { name: 'Diego Lachira', role: 'Desarrollo interactivo', bio: 'Prueba la navegación, los lectores y los estados accesibles.' },
 ];
