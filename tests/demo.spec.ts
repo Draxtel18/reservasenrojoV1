@@ -2,18 +2,23 @@ import { test, expect } from '@playwright/test';
 
 test('comic demo can be read, navigated and closed with focus restored', async ({ page }) => {
   await page.goto('/comic');
-  await page.getByRole('button', { name: 'Explorar cómic', exact: true }).click();
+  const trigger = page.getByRole('button', { name: 'Explorar cómic', exact: true });
+  await trigger.click();
   const reader = page.getByRole('dialog');
-  await expect(reader.getByRole('heading', { name: 'La espera', exact: true })).toBeVisible();
-  await expect(reader.getByText('Página 1 de 3', { exact: true })).toBeVisible();
+  await expect(reader.getByRole('heading', { name: 'Los vampiros', exact: true })).toBeVisible();
+  await expect(reader.getByText('Página 1 de 10', { exact: true })).toBeVisible();
+  const previous = reader.getByRole('button', { name: 'Página anterior', exact: true });
+  await expect(previous).toBeDisabled();
   await reader.getByRole('button', { name: 'Página siguiente', exact: true }).click();
-  await expect(reader.getByText('Página 2 de 3', { exact: true })).toBeVisible();
+  await expect(reader.getByText('Página 2 de 10', { exact: true })).toBeVisible();
+  await expect(previous).toBeEnabled();
   await page.keyboard.press('ArrowRight');
-  await expect(reader.getByText('Página 3 de 3', { exact: true })).toBeVisible();
-  await expect(reader.getByRole('button', { name: 'Página siguiente', exact: true })).toHaveCount(0);
+  await expect(reader.getByText('Página 3 de 10', { exact: true })).toBeVisible();
+  await page.keyboard.press('End');
+  await expect(reader.getByText('Página 10 de 10', { exact: true })).toBeVisible();
   await reader.getByRole('button', { name: 'Cerrar cómic', exact: true }).click();
   await expect(reader).not.toBeVisible();
-  await expect(page.getByRole('button', { name: 'Explorar cómic', exact: true })).toBeFocused();
+  await expect(trigger).toBeFocused();
 });
 
 test('podcast demo has real playable audio and a labeled transcript', async ({ page }) => {
@@ -40,10 +45,17 @@ test('photo captions sit outside the image clipping frame with breathing room', 
   expect(gap).toBeGreaterThanOrEqual(15);
 });
 
-test('comic cover typography keeps readable contrast and a real display title', async ({ page }) => {
+test('comic cover is the real first page artwork instead of a demo placeholder', async ({ page }) => {
   await page.goto('/comic');
   const cover = page.locator('.comic-cover');
-  await expect.poll(() => cover.evaluate(element => getComputedStyle(element).color)).toBe('rgb(242, 242, 242)');
-  const title = cover.getByText('La espera', { exact: true });
-  expect(await title.evaluate(element => Number.parseFloat(getComputedStyle(element).fontSize))).toBeGreaterThanOrEqual(30);
+  const image = cover.locator('img');
+  await expect(image).toHaveCount(1);
+  const source = new URL((await image.getAttribute('src'))!, page.url());
+  expect(source.searchParams.get('url') ?? source.pathname).toContain('/comic/los-vampiros/01.webp');
+  await expect(image).toHaveAttribute('alt', /^Portada del cómic/);
+  const caption = cover.locator('figcaption');
+  await expect(caption).toContainText('Cómic periodístico');
+  await expect(caption).toContainText('10 páginas');
+  await expect(page.getByText('La espera')).toHaveCount(0);
+  await expect(page.locator('svg[aria-label*="Ilustración ficticia"]')).toHaveCount(0);
 });

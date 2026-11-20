@@ -13,6 +13,19 @@ test('the cover leads to independent section pages and back', async ({ page }) =
   await expect(page).toHaveURL(/\/$/);
 });
 
+test('the portal comic card shows the real cover without an embedded reader trigger', async ({ page }) => {
+  await page.goto('/');
+  const card = page.locator('#comic .portal-link');
+  await expect(card).toHaveRole('link');
+  const cover = card.locator('.comic-cover');
+  await expect(cover.locator('img')).toHaveCount(1);
+  const source = new URL((await cover.locator('img').getAttribute('src'))!, page.url());
+  expect(source.searchParams.get('url') ?? source.pathname).toContain('/comic/los-vampiros/01.webp');
+  await expect(cover.locator('figcaption')).toContainText('10 páginas');
+  await expect(card.getByRole('button')).toHaveCount(0);
+  await expect(card.locator('svg[aria-label*="Ilustración ficticia"]')).toHaveCount(0);
+});
+
 test('all seven formats are real deep links with their own content', async ({ page }) => {
   const titles: Record<string, string> = {
     reportaje: 'Reportaje audiovisual', comic: 'Cómic periodístico', podcast: 'Podcast',

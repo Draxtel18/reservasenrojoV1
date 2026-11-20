@@ -1,6 +1,6 @@
 import { test, expect, Page } from '@playwright/test';
 
-const comicKey = 'reservas:progress:v1:comic-la-espera';
+const comicKey = 'reservas:progress:v1:comic-los-vampiros';
 const audioKey = 'reservas:progress:v1:podcast-la-espera';
 async function swipe(page: Page, dx: number, dy: number, touches = 1) {
   await page.locator('[data-comic-body]').evaluate((element, gesture) => {
@@ -19,32 +19,41 @@ test('mobile comic keeps controls visible, distinguishes gestures and resumes lo
   const body = page.locator('[data-comic-body]');
   await expect(body).toBeVisible();
   await body.evaluate(element => { element.scrollTop = element.scrollHeight; });
-  for (const name of ['Cerrar lector', 'Página anterior', 'Página siguiente']) {
-    const bounds = await dialog.getByRole('button', { name, exact: true }).boundingBox();
-    expect(bounds!.y).toBeGreaterThanOrEqual(0);
-    expect(bounds!.y + bounds!.height).toBeLessThanOrEqual(844);
+  const active = dialog.locator('[data-thumb][aria-current="page"]');
+  await expect(active).toHaveAttribute('aria-label', 'Ir a la página 1');
+  for (const control of [
+    dialog.getByRole('button', { name: 'Cerrar lector', exact: true }),
+    dialog.getByRole('button', { name: 'Página anterior', exact: true }),
+    dialog.getByRole('button', { name: 'Página siguiente', exact: true }),
+    active,
+  ]) {
+    await expect.poll(async () => {
+      const box = await control.boundingBox();
+      return box !== null && box.y >= 0 && box.y + box.height <= 844;
+    }).toBe(true);
   }
+  await expect(dialog.getByRole('button', { name: 'Ver página completa', exact: true })).toBeHidden();
   await page.screenshot({ path: testInfo.outputPath('comic-mobile.png') });
   await swipe(page, -20, -120);
-  await expect(dialog).toContainText('Página 1 de 3');
+  await expect(dialog).toContainText('Página 1 de 10');
   await swipe(page, -120, 10, 2);
-  await expect(dialog).toContainText('Página 1 de 3');
-  await dialog.getByRole('button', { name: 'Ampliar viñeta', exact: true }).click();
+  await expect(dialog).toContainText('Página 1 de 10');
   await swipe(page, -120, 10);
-  await expect(dialog).toContainText('Página 1 de 3');
-  await dialog.getByRole('button', { name: 'Ajustar viñeta', exact: true }).click();
-  await swipe(page, -120, 10);
-  await expect(dialog).toContainText('Página 2 de 3');
+  await expect(dialog).toContainText('Página 2 de 10');
   await page.keyboard.press('Escape');
   await expect(trigger).toBeFocused();
   await page.reload();
   await trigger.click();
-  await expect(dialog).toContainText('Página 2 de 3');
-  await dialog.getByRole('button', { name: 'Volver al inicio', exact: true }).click();
-  await expect(dialog).toContainText('Página 1 de 3');
+  await expect(dialog).toContainText('Página 2 de 10');
+  await dialog.getByRole('button', { name: 'Ir a la página 1', exact: true }).click();
+  await expect(dialog).toContainText('Página 1 de 10');
   await page.keyboard.press('ArrowRight');
   await page.keyboard.press('ArrowRight');
+  await expect(dialog).toContainText('Página 3 de 10');
+  await page.keyboard.press('End');
+  await expect(dialog).toContainText('Página 10 de 10');
   await dialog.getByRole('button', { name: 'Cerrar cómic', exact: true }).click();
+  await expect(dialog).not.toBeVisible();
   await expect(trigger).toBeFocused();
 });
 
@@ -52,16 +61,16 @@ test('comic clamps corrupt progress and survives blocked storage', async ({ page
   await page.goto('/comic');
   await page.evaluate(key => localStorage.setItem(key, JSON.stringify({ position: 9999.9 })), comicKey);
   await page.getByRole('button', { name: 'Explorar cómic', exact: true }).click();
-  await expect(page.getByRole('dialog')).toContainText('Página 3 de 3');
+  await expect(page.getByRole('dialog')).toContainText('Página 10 de 10');
   await page.keyboard.press('Escape');
   await page.evaluate(key => localStorage.setItem(key, '{broken'), comicKey);
   await page.getByRole('button', { name: 'Explorar cómic', exact: true }).click();
-  await expect(page.getByRole('dialog')).toContainText('Página 1 de 3');
+  await expect(page.getByRole('dialog')).toContainText('Página 1 de 10');
   await page.keyboard.press('Escape');
   await page.evaluate(() => { Storage.prototype.getItem = () => { throw new Error('blocked'); }; Storage.prototype.setItem = () => { throw new Error('blocked'); }; });
   await page.getByRole('button', { name: 'Explorar cómic', exact: true }).click();
   await page.keyboard.press('ArrowRight');
-  await expect(page.getByRole('dialog')).toContainText('Página 2 de 3');
+  await expect(page.getByRole('dialog')).toContainText('Página 2 de 10');
 });
 
 test('custom podcast controls use real WAV events and resume without autoplay', async ({ page }, testInfo) => {
@@ -143,8 +152,11 @@ test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
   test('comic story and native podcast remain accessible', async ({ page }) => {
     await page.goto('/comic');
-    const story = page.getByRole('region', { name: 'Historia del cómic sin JavaScript' });
-    await expect(story.getByRole('heading', { level: 3 })).toHaveText(['La sala de espera', 'Las preguntas', 'Una red de apoyo']);
+    const story = page.getByRole('region', { name: 'Cómic sin JavaScript' });
+    const pages = story.getByRole('link');
+    await expect(pages).toHaveCount(10);
+    await expect(pages.first()).toHaveAttribute('href', '/comic/los-vampiros/01.webp');
+    await expect(pages.first()).toHaveAccessibleName(/Portada del cómic/);
     await page.goto('/podcast');
     await expect(page.locator('audio')).toHaveAttribute('controls', '');
     await page.getByText('Transcripción', { exact: true }).click();

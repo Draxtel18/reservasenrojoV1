@@ -33,13 +33,18 @@ test('documentary loads the real privacy-enhanced embed only on request', async 
   expect(box!.width / box!.height).toBeCloseTo(16 / 9, 1);
 });
 
-test('comic identifies its imagined narrative and restores keyboard focus', async ({ page }) => {
+test('comic identifies the real reported story and restores keyboard focus', async ({ page }) => {
   await page.goto('/comic');
   await page.getByRole('button', { name: 'Explorar cómic' }).click();
-  await expect(page.getByRole('dialog')).toBeVisible();
-  await expect(page.getByRole('dialog')).toContainText('ciudad imaginaria');
+  const dialog = page.getByRole('dialog');
+  await expect(dialog).toBeVisible();
+  await expect(dialog).toContainText('Los vampiros');
+  await expect(dialog).toContainText('Piura');
+  const copy = await page.locator('body').innerText();
+  expect(copy).not.toContain('imaginaria');
+  expect(copy).not.toContain('La espera');
   await page.keyboard.press('Escape');
-  await expect(page.getByRole('dialog')).not.toBeVisible();
+  await expect(dialog).not.toBeVisible();
   await expect(page.getByRole('button', { name: 'Explorar cómic' })).toBeFocused();
 });
 

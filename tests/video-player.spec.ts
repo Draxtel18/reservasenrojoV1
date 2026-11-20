@@ -93,7 +93,7 @@ test('a slow player does not start automatically after the visitor scrolls away'
 test('video resumes locally only after activation and can restart without affecting other media', async ({ page }) => {
   await page.addInitScript(() => {
     localStorage.setItem('reservas:progress:v1:video--KErtns1Jv0', JSON.stringify({ position: 38 }));
-    localStorage.setItem('reservas:progress:v1:comic-la-espera', JSON.stringify({ position: 2 }));
+    localStorage.setItem('reservas:progress:v1:comic-los-vampiros', JSON.stringify({ position: 2 }));
   });
   let requests = 0;
   await page.route('https://www.youtube.com/iframe_api', route => { requests++; return route.fulfill({ contentType: 'application/javascript', body: api }); });
@@ -109,7 +109,7 @@ test('video resumes locally only after activation and can restart without affect
   await expect.poll(() => page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:video--KErtns1Jv0')!).position)).toBe(39);
   await clickControl(page.getByRole('button', { name: 'Reiniciar video desde el comienzo', exact: true }));
   expect(await page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:video--KErtns1Jv0')!).position)).toBe(0);
-  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:comic-la-espera')!).position)).toBe(2);
+  expect(await page.evaluate(() => JSON.parse(localStorage.getItem('reservas:progress:v1:comic-los-vampiros')!).position)).toBe(2);
 });
 
 test('video ignores invalid saved positions and handles blocked storage without invented transcript', async ({ page }) => {
