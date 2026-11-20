@@ -10,6 +10,19 @@ export const sections = [
   ['lectura', 'Reportaje escrito'], ['equipo', 'Equipo'],
 ] as const;
 
+// Single source of truth for temporarily gated formats.
+// Re-enabling a format later means deleting one string from comingSoonFormats.
+export const comingSoonFormats: readonly string[] = ['podcast', 'lectura'];
+export const isComingSoon = (id: string) => comingSoonFormats.includes(id);
+export const publishedSections = sections.filter(([id]) => !isComingSoon(id));
+export const comingSoonLabel = 'Próximamente';
+export const comingSoonNotes: Record<string, string> = {
+  podcast: 'Las ideas aun se estan ordenando ...',
+  lectura: 'Algo se esta cocinando ...',
+};
+export const primarySectionIds: readonly string[] = ['reportaje', 'lectura', 'equipo'];
+export const primarySections = sections.filter(([id]) => primarySectionIds.includes(id) && !isComingSoon(id));
+
 export const questions = [
   {
     prompt: '¿En qué ciudad investigamos?',
@@ -70,6 +83,6 @@ export const portals = [
   { id: 'podcast', title: 'Escuchar para entender', label: 'Explorar podcast', kind: 'Narrativa sonora', image: 'procedimiento', alt: 'Trabajo del personal durante una extracción de sangre', description: 'Conoce las opiniones y recomendaciones de expertos de distintos rubros sobre la donación de sangre.'},
   { id: 'participa', title: 'Pon tu mirada a prueba', label: 'Comenzar', kind: 'Experiencia gamificada', image: 'prueba', alt: 'Prueba realizada en el dedo de una persona', description: 'Una experiencia interactiva sobre la donación de sangre que te invita a tomar decisiones y descubrir cómo puedes salvar vidas.' },
   { id: 'cronologia', title: 'Los hechos, en contexto', label: 'Explorar cronología', kind: 'Línea de tiempo', image: 'donacion', alt: 'Bolsa de sangre en el equipo de extracción', description: 'Recorre los principales acontecimientos que marcaron la evolución de la donación y transfusión de sangre en el mundo y el Perú, desde sus primeros avances hasta la actualidad.' },
-  { id: 'lectura', title: 'Detrás de la urgencia', label: 'Leer el reportaje', kind: 'Reportaje escrito', image: 'reserva', alt: 'Material de extracción en una bandeja', description: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' },
+  { id: 'lectura', title: 'Detrás de la urgencia', label: 'Leer el reportaje', kind: 'Reportaje escrito', image: 'reserva', alt: 'Material de extracción en una bandeja', description: 'La investigación completa en formato texto: el contexto de las emergencias, las familias que buscan sangre y el sistema que debería garantizarla.' },
   { id: 'equipo', title: 'Quiénes investigan', label: 'Conocer al equipo', kind: 'Sobre nosotros', image: null, alt: '', description: 'Detrás de Reservas en Rojo hay un equipo comprometido con visibilizar la importancia de la donación de sangre y generar conciencia.'},
 ];

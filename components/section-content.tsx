@@ -3,7 +3,7 @@ import { Documentary } from '@/components/video-player';
 import { ComicCover, ComicReader } from '@/components/comic-reader';
 import { DemoPodcast } from '@/components/demo-media';
 import { GameEmbed } from '@/components/game-embed';
-import { documentary, editorial, readingMinutes, readingNotes, sections, timelineNotes } from '@/content/editorial';
+import { comingSoonLabel, documentary, editorial, isComingSoon, readingMinutes, readingNotes, sections, timelineNotes } from '@/content/editorial';
 import { demoTeam } from '@/content/demo';
 
 function Photo({ name, alt }: { name: string; alt: string }) {
@@ -16,7 +16,9 @@ export function SectionContent({ section }: { section: string }) {
         <div className="section-intro"><h2 id="documentary-title" data-reveal>La historia, de cerca</h2><p data-reveal>{documentary.description} Mira el reportaje completo.</p></div>
         <div data-reveal><Documentary /></div>
         <div className="media-caption"><span>Reservas en rojo. Reportaje audiovisual.</span></div>
-        <nav id="formatos" className="format-index" aria-label="Formatos de la investigación">{sections.slice(1).map(([id, label]) => <a key={id} href={`/${id}`}>{label}<span aria-hidden="true">↘</span></a>)}</nav>
+        <nav id="formatos" className="format-index" aria-label="Formatos de la investigación">{sections.slice(1).map(([id, label]) => isComingSoon(id)
+          ? <span key={id} className="format-soon">{label}<span className="portal-pill">{comingSoonLabel}</span></span>
+          : <a key={id} href={`/${id}`}>{label}<span aria-hidden="true">↘</span></a>)}</nav>
       </section>),
     comic: (<section id="comic" className="section comic light" aria-labelledby="comic-title">
         <div className="comic-copy">
@@ -26,6 +28,7 @@ export function SectionContent({ section }: { section: string }) {
         </div>  
         <ComicCover />
       </section>),
+    // Gated by comingSoonFormats: this block stays so the podcast can be reactivated by one string.
     podcast: (<section id="podcast" className="section podcast deep" aria-labelledby="podcast-title">
         <div className="podcast-art" data-reveal><Photo name="procedimiento" alt="Detalle del trabajo del personal durante una extracción" /><span>La investigación<br />también se escucha.</span></div>
         <div className="podcast-copy"><h2 id="podcast-title" data-reveal>Escuchar para entender</h2><p data-reveal>Una narración que acompaña el relato ilustrado. Escucha, pausa o sigue la historia con su transcripción.</p><DemoPodcast /></div>
@@ -38,6 +41,7 @@ export function SectionContent({ section }: { section: string }) {
         <div className="section-intro"><h2 id="timeline-title" data-reveal>Una historia en pasos</h2><p data-reveal>Diecisiete hitos de la historia de la transfusión y la donación de sangre, en el mundo y en el Perú.</p></div>
         <div className="timeline-layout"><ol className="demo-timeline">{timelineNotes.map(item => <li className="demo-timeline-item" key={item.label} data-reveal="row"><h3>{item.title}</h3><p className="timeline-date">{item.label}</p><p>{item.text}</p></li>)}</ol><figure data-reveal="media"><Photo name="donacion" alt="Una bolsa de sangre se encuentra en el equipo de extracción" /><figcaption>Fotografía proporcionada. Autoría y fecha pendientes.</figcaption></figure></div>
       </section>),
+    // Gated by comingSoonFormats: this block stays so the written report can be reactivated by one string.
     lectura: (<section id="lectura" className="section written light" aria-labelledby="written-title">
         <div className="article-opening"><h2 id="written-title" data-reveal>Detrás de la urgencia</h2><p className="article-lead" data-reveal>{editorial.lead}</p></div>
         <div className="article-grid"><aside><p>Lectura del planteamiento</p><p>{readingMinutes} min de lectura estimada. Autoría y fecha pendientes.</p><nav className="article-index" aria-label="Índice del relato">{readingNotes.map((item, index) => <a href={`#demo-article-${index}`} key={item.title}>{item.title}</a>)}</nav></aside><article>{readingNotes.map((item, index) => <div key={item.title} id={`demo-article-${index}`} className="demo-article-part"><h3>{item.title}</h3><p>{item.text}</p>{index === 1 && <figure data-reveal="media"><Photo name="reserva" alt="Bolsa de sangre en una bandeja del equipo de extracción" /><figcaption>Fotografía proporcionada. Crédito pendiente.</figcaption></figure>}</div>)}<a className="text-link" href="/reportaje">Ver el reportaje original</a></article></div>

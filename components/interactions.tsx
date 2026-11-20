@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { questions, sections } from '@/content/editorial';
+import { primarySections, questions } from '@/content/editorial';
 
 export function BackToTop() {
   const pathname = usePathname();
@@ -28,7 +28,7 @@ export function Navigation() {
     <span className="edition">Proyecto transmedia <span>Piura, Perú</span></span>
     <button ref={menuButton} className="menu-button" aria-expanded={open} aria-controls="navigation" onClick={() => setOpen(!open)}>{open ? 'Cerrar menú' : 'Menú'}</button>
     <nav id="navigation" aria-label="Navegación principal" className={open ? 'navigation is-open' : 'navigation'} onKeyDown={event => { if (event.key === 'Escape') { setOpen(false); menuButton.current?.focus(); } }}>
-      {[sections[0], sections[5], sections[6]].map(([id, label]) => <Link key={id} href={`/${id}`} aria-current={pathname === `/${id}` ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</Link>)}
+      {primarySections.map(([id, label]) => <Link key={id} href={`/${id}`} aria-current={pathname === `/${id}` ? 'page' : undefined} onClick={() => setOpen(false)}>{label}</Link>)}
       <Link className="header-action" href="/#formatos" onClick={() => setOpen(false)}>Explorar</Link>
     </nav>
   </header>;

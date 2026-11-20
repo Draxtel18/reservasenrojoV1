@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { sections } from '@/content/editorial';
+import { comingSoonLabel, isComingSoon, sections } from '@/content/editorial';
 import { BackToTop } from './interactions';
 
 export function Footer() {
@@ -9,7 +9,9 @@ export function Footer() {
     <div className="footer-bottom">
       <Link href="/" aria-label="Reservas en rojo, volver al inicio"><Image src="/media/logo-transparent.webp" alt="Logo oficial de Reservas en rojo" width={151} height={101} /></Link>
       <div><p>Proyecto transmedia.<br />Piura, Perú.</p><p><strong>Créditos</strong><br />Reportaje y textos: [nombres].<br />Fotografía: [nombre].<br />Diseño e ilustraciones: [nombres].<br />Producción audiovisual y edición: [nombres].<br />Desarrollo web: [nombre o equipo].</p></div>
-      <nav aria-label="Navegación del pie de página">{sections.map(([id, label]) => <Link key={id} href={`/${id}`}>{label}</Link>)}</nav>
+      <nav aria-label="Navegación del pie de página">{sections.map(([id, label]) => isComingSoon(id)
+        ? <span key={id} className="footer-soon">{label} <span className="portal-pill">{comingSoonLabel}</span></span>
+        : <Link key={id} href={`/${id}`}>{label}</Link>)}</nav>
       <div className="footer-connect">
         <section className="footer-social" aria-labelledby="social-heading">
           <h2 id="social-heading">Redes sociales</h2>

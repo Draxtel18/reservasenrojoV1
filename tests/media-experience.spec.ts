@@ -96,7 +96,9 @@ test('comic clamps corrupt progress and survives blocked storage', async ({ page
   await expect(page.getByRole('dialog')).toContainText('Página 2 de 10');
 });
 
-test('custom podcast controls use real WAV events and resume without autoplay', async ({ page }, testInfo) => {
+// Pending: /podcast is gated by comingSoonFormats, so the audio fixture is unreachable.
+// Restore this coverage by deleting the format from comingSoonFormats, not by rewriting the test.
+test.fixme('custom podcast controls use real WAV events and resume without autoplay', async ({ page }, testInfo) => {
   await page.goto('/podcast');
   const audio = page.locator('audio').first();
   await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).duration)).toBeGreaterThan(85);
@@ -129,7 +131,8 @@ test('custom podcast controls use real WAV events and resume without autoplay', 
   await page.locator('[aria-label="Reproductor de audio"]').screenshot({ path: testInfo.outputPath('podcast-controls.png') });
 });
 
-test('audio fixture error and ended events reset honestly without overwriting comic', async ({ page }) => {
+// Pending: /podcast is gated by comingSoonFormats, so the audio fixture is unreachable.
+test.fixme('audio fixture error and ended events reset honestly without overwriting comic', async ({ page }) => {
   await page.goto('/podcast');
   await page.evaluate(([comic, audio]) => { localStorage.setItem(comic, JSON.stringify({ position: 1 })); localStorage.setItem(audio, JSON.stringify({ position: 999999 })); }, [comicKey, audioKey]);
   await page.reload();
@@ -143,7 +146,8 @@ test('audio fixture error and ended events reset honestly without overwriting co
   await expect(page.locator('[aria-label="Reproductor de audio"]').getByRole('alert')).toContainText('No se pudo');
 });
 
-test('audio accepts malformed or blocked local storage without blocking playback', async ({ page }) => {
+// Pending: /podcast is gated by comingSoonFormats, so the audio fixture is unreachable.
+test.fixme('audio accepts malformed or blocked local storage without blocking playback', async ({ page }) => {
   await page.goto('/podcast');
   await page.evaluate(key => localStorage.setItem(key, '{broken'), audioKey);
   await page.reload();
@@ -156,7 +160,8 @@ test('audio accepts malformed or blocked local storage without blocking playback
   await page.getByRole('button', { name: 'Pausar audio', exact: true }).click();
 });
 
-test('audio rejection fixture and route cleanup do not leave playback behind', async ({ page }) => {
+// Pending: /podcast is gated by comingSoonFormats, so the audio fixture is unreachable.
+test.fixme('audio rejection fixture and route cleanup do not leave playback behind', async ({ page }) => {
   await page.goto('/podcast');
   const audio = page.locator('audio').first();
   await expect.poll(() => audio.evaluate(e => (e as HTMLAudioElement).duration)).toBeGreaterThan(85);
@@ -173,16 +178,12 @@ test('audio rejection fixture and route cleanup do not leave playback behind', a
 
 test.describe('without JavaScript', () => {
   test.use({ javaScriptEnabled: false });
-  test('comic story and native podcast remain accessible', async ({ page }) => {
+  test('comic story remains accessible', async ({ page }) => {
     await page.goto('/comic');
     const story = page.getByRole('region', { name: 'Cómic sin JavaScript' });
     const pages = story.getByRole('link');
     await expect(pages).toHaveCount(10);
     await expect(pages.first()).toHaveAttribute('href', '/comic/los-vampiros/01.webp');
     await expect(pages.first()).toHaveAccessibleName(/Portada del cómic/);
-    await page.goto('/podcast');
-    await expect(page.locator('audio')).toHaveAttribute('controls', '');
-    await page.getByText('Transcripción', { exact: true }).click();
-    await expect(page.locator('details[open] p')).toHaveCount(5);
   });
 });

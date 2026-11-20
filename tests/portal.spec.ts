@@ -26,10 +26,10 @@ test('the portal comic card shows the real cover without an embedded reader trig
   await expect(card.locator('svg[aria-label*="Ilustración ficticia"]')).toHaveCount(0);
 });
 
-test('all seven formats are real deep links with their own content', async ({ page }) => {
+test('every published format is a real deep link with its own content', async ({ page }) => {
   const titles: Record<string, string> = {
-    reportaje: 'Reportaje audiovisual', comic: 'Cómic periodístico', podcast: 'Podcast',
-    participa: 'Experiencia periodística gamificada', cronologia: 'Cronología', lectura: 'Reportaje escrito', equipo: 'Sobre nosotros',
+    reportaje: 'Reportaje audiovisual', comic: 'Cómic periodístico',
+    participa: 'Experiencia periodística gamificada', cronologia: 'Cronología', equipo: 'Sobre nosotros',
   };
   for (const [route, title] of Object.entries(titles)) {
     const response = await page.goto(`/${route}`);
@@ -63,7 +63,8 @@ test('logo uses transparent WebP without redrawing the artwork', async ({ page }
 
 test('all raster content uses working WebP sources on every route', async ({ page, request }) => {
   const sources = new Set<string>();
-  for (const route of ['/', '/reportaje', '/comic', '/podcast', '/participa', '/cronologia', '/lectura', '/equipo']) {
+  // The 404 page has no raster images by design, so locked routes are not listed here.
+  for (const route of ['/', '/reportaje', '/comic', '/participa', '/cronologia', '/equipo']) {
     await page.goto(route);
     const images = await page.locator('img').evaluateAll(elements => elements.map(image => image.getAttribute('src')!));
     expect(images.length).toBeGreaterThan(0);

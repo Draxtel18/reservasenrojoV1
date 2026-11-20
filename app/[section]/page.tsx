@@ -3,7 +3,7 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { SectionContent } from '@/components/section-content';
-import { sections } from '@/content/editorial';
+import { isComingSoon, publishedSections, sections } from '@/content/editorial';
 
 const titles: Record<string, string> = {
   reportaje: 'Reportaje audiovisual', comic: 'Cómic periodístico', podcast: 'Podcast',
@@ -11,19 +11,23 @@ const titles: Record<string, string> = {
 };
 
 export function generateStaticParams() {
-  return sections.map(([section]) => ({ section }));
+  return publishedSections.map(([section]) => ({ section }));
 }
 
 export async function generateMetadata({ params }: { params: Promise<{ section: string }> }): Promise<Metadata> {
   const { section } = await params;
-  return { title: `${titles[section] || 'Página no encontrada'} | Reservas en rojo` };
+  // Locked and unknown sections both answer with the not-found title.
+  const title = isComingSoon(section) ? undefined : titles[section];
+  return { title: `${title || 'Página no encontrada'} | Reservas en rojo` };
 }
 
 export default async function SectionPage({ params }: { params: Promise<{ section: string }> }) {
   const { section } = await params;
   if (!sections.some(([id]) => id === section)) notFound();
-  const current = sections.findIndex(([id]) => id === section);
-  const next = sections[(current + 1) % sections.length];
+  if (isComingSoon(section)) notFound();
+  const current = publishedSections.findIndex(([id]) => id === section);
+  // Chapter navigation only walks published formats, so it never points at a locked route.
+  const next = publishedSections[(current + 1) % publishedSections.length];
   return <main id="contenido" className="detail-page">
     <div className="detail-heading">
       <h1 tabIndex={-1} data-reveal="text">{titles[section]}</h1>

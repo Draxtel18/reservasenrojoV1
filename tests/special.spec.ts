@@ -13,8 +13,6 @@ test('the editorial shell renders its sections and formats', async ({ page }) =>
   await expect(page.locator('audio')).toHaveCount(0);
   await page.goto('/cronologia');
   await expect(page.locator('.demo-timeline-item').first()).toBeVisible();
-  await page.goto('/lectura');
-  await expect(page.locator('#lectura')).toBeVisible();
 });
 
 test('documentary loads the real privacy-enhanced embed only on request', async ({ page }) => {

@@ -21,7 +21,9 @@ test('comic demo can be read, navigated and closed with focus restored', async (
   await expect(trigger).toBeFocused();
 });
 
-test('podcast demo has real playable audio and a labeled transcript', async ({ page }) => {
+// Pending: /podcast is gated by comingSoonFormats, so the demo audio cannot be reached.
+// Restore this coverage by deleting the format from comingSoonFormats, not by rewriting the test.
+test.fixme('podcast demo has real playable audio and a labeled transcript', async ({ page }) => {
   await page.goto('/podcast');
   await expect(page.locator('#podcast')).toContainText('sintética');
   const audio = page.locator('audio');
