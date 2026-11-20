@@ -1,12 +1,6 @@
 import podcast from './demo-podcast.json';
 export { podcast }
 
-export const comicPages = [
-  { title: 'La sala de espera', scene: 0, narration: 'Una noche cualquiera, en una ciudad imaginaria, Lucía y Mateo acompañan a su familia. El reloj avanza y las preguntas se acumulan.', dialogue: ['Lucía: Siento que no sé por dónde empezar.', 'Mateo: Podemos escribir lo que necesitamos preguntar.'] },
-  { title: 'Las preguntas', scene: 1, narration: 'La libreta se convierte en un pequeño mapa. Una conversación tranquila les permite ordenar sus dudas, sin convertir los rumores en respuestas.', dialogue: ['Lucía: ¿Podemos revisar estas preguntas juntos?', 'Recepción: Empecemos por la primera. Tenemos tiempo para escuchar.'] },
-  { title: 'Una red de apoyo', scene: 2, narration: 'Al volver a casa, comparten una conversación, no una cadena de mensajes. Esta historia imaginaria termina con una libreta abierta y una nueva manera de escuchar.', dialogue: ['Mateo: Anotamos lo que sabemos y lo que todavía falta.', 'Lucía: Y mañana seguiremos preguntando.'] },
-];
-
 export const demoTimeline = [
   { label: 'Jornada 01', title: 'El punto de partida', text: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' },
   { label: 'Jornada 02', title: 'Poner nombre a las dudas', text: 'Lorem Ipsum is simply dummy text of the printing and typesetting industry.' },

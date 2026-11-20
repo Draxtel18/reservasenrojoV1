@@ -1,6 +1,7 @@
 import Image from 'next/image';
 import { Documentary } from '@/components/video-player';
-import { DemoComic, DemoComicCover, DemoPodcast } from '@/components/demo-media';
+import { ComicCover, ComicReader } from '@/components/comic-reader';
+import { DemoPodcast } from '@/components/demo-media';
 import { GameEmbed } from '@/components/game-embed';
 import { documentary, editorial, readingMinutes, readingNotes, sections, timelineNotes } from '@/content/editorial';
 import { demoTeam } from '@/content/demo';
@@ -18,8 +19,13 @@ export function SectionContent({ section }: { section: string }) {
         <nav id="formatos" className="format-index" aria-label="Formatos de la investigación">{sections.slice(1).map(([id, label]) => <a key={id} href={`/${id}`}>{label}<span aria-hidden="true">↘</span></a>)}</nav>
       </section>),
     comic: (<section id="comic" className="section comic light" aria-labelledby="comic-title">
-        <div className="comic-copy"><h2 id="comic-title" data-reveal>Otra forma de mirar</h2><p data-reveal>La espera: tres páginas ilustradas sobre dos personajes que aprenden a ordenar sus preguntas. Explora las viñetas a tu ritmo.</p><DemoComic /></div>
-        <DemoComicCover />
+        <div className="comic-copy">
+          <p className="status" data-reveal>Cómic periodístico · 10 páginas</p>
+          <h2 id="comic-title" data-reveal>Otra forma de mirar</h2>
+          <p data-reveal>«Los vampiros» reconstruye la historia de Daniel, un joven de 24 años que paga S/ 1 200 por una sangre que nunca llega a su padre. Diez páginas ilustradas sobre la red que lucraba con la desesperación de las familias de Piura.</p>
+          <ComicReader />
+        </div>
+        <ComicCover />
       </section>),
     podcast: (<section id="podcast" className="section podcast deep" aria-labelledby="podcast-title">
         <div className="podcast-art" data-reveal><Photo name="procedimiento" alt="Detalle del trabajo del personal durante una extracción" /><span>La investigación<br />también se escucha.</span></div>

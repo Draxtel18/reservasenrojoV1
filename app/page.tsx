@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { editorial, portals, sections } from '@/content/editorial';
-import { DemoComicCover } from '@/components/demo-media';
+import { ComicCover } from '@/components/comic-reader';
 
 
 
@@ -26,7 +26,7 @@ export default function Home() {
           <p data-reveal="text">{portal.description}</p>
           <span className="portal-action" data-reveal="row">{portal.label}<span className="portal-arrow" aria-hidden="true">↗</span></span>
         </div>
-        {portal.image ? <figure className="portal-media" data-reveal="media"><div className="photo-frame"><Image src={`/media/${portal.image}.webp`} alt={portal.alt} width={1366} height={768} sizes="(max-width: 700px) 100vw, 65vw" /></div><figcaption>{portal.kind}</figcaption></figure> : portal.id === 'comic' ? <DemoComicCover /> : <div className="team-invitation" data-reveal="media"><p>Un equipo.<br />Muchas miradas.</p><span>Conocelos a profundidad.</span></div>}
+        {portal.image ? <figure className="portal-media" data-reveal="media"><div className="photo-frame"><Image src={`/media/${portal.image}.webp`} alt={portal.alt} width={1366} height={768} sizes="(max-width: 700px) 100vw, 65vw" /></div><figcaption>{portal.kind}</figcaption></figure> : portal.id === 'comic' ? <ComicCover /> : <div className="team-invitation" data-reveal="media"><p>Un equipo.<br />Muchas miradas.</p><span>Conocelos a profundidad.</span></div>}
       </Link>
     </section>)}
   </main>;
